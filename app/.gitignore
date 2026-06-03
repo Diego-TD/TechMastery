@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# lint/format reports
+reports/
+
+# vitest coverage reports
+coverage/
