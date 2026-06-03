@@ -5,7 +5,7 @@ export default defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: "v8",
-      reporter: ["text"],
+      reporter: ["text", "html"],
       reportsDirectory: "./coverage/convex",
       include: ["convex/**/*.ts"],
       exclude: [
