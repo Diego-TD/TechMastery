@@ -12,12 +12,12 @@ import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
 export default function App() {
   return (
     <>
-      <header className="sticky top-0 z-10 bg-light dark:bg-dark p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
+      <header className="sticky top-0 z-10  p-4 border-b-2 flex flex-row justify-between items-center">
         Convex + React + Clerk
         <UserButton />
       </header>
       <main className="p-8 flex flex-col gap-16">
-        <h1 className="text-4xl font-bold text-center">
+        <h1 className="text-4xl  font-serif  text-center">
           Convex + React + Clerk
         </h1>
         <Authenticated>
@@ -36,12 +36,12 @@ function SignInForm() {
     <div className="flex flex-col gap-8 w-96 mx-auto">
       <p>Log in to see the numbers</p>
       <SignInButton mode="modal">
-        <button className="bg-dark dark:bg-light text-light dark:text-dark text-sm px-4 py-2 rounded-md border-2">
+        <button className="text-sm px-4 py-2 rounded-md border-2">
           Sign in
         </button>
       </SignInButton>
       <SignUpButton mode="modal">
-        <button className="bg-dark dark:bg-light text-light dark:text-dark text-sm px-4 py-2 rounded-md border-2">
+        <button className=" text-sm px-4 py-2 rounded-md border-2">
           Sign up
         </button>
       </SignUpButton>
@@ -73,7 +73,7 @@ function Content() {
       </p>
       <p>
         <button
-          className="bg-dark dark:bg-light text-light dark:text-dark text-sm px-4 py-2 rounded-md border-2"
+          className="text-sm px-4 py-2 rounded-md border-2"
           onClick={() => {
             void addNumber({ value: Math.floor(Math.random() * 10) });
           }}
@@ -85,18 +85,18 @@ function Content() {
         Numbers:{" "}
         {numbers?.length === 0
           ? "Click the button!"
-          : numbers?.join(", ") ?? "..."}
+          : (numbers?.join(", ") ?? "...")}
       </p>
       <p>
         Edit{" "}
-        <code className="text-sm font-bold font-mono bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded-md">
+        <code className="text-sm font-bold font-mono px-1 py-0.5 rounded-md">
           convex/myFunctions.ts
         </code>{" "}
         to change your backend
       </p>
       <p>
         Edit{" "}
-        <code className="text-sm font-bold font-mono bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded-md">
+        <code className="text-sm font-bold font-mono  px-1 py-0.5 rounded-md">
           src/App.tsx
         </code>{" "}
         to change your frontend
@@ -146,7 +146,7 @@ function ResourceCard({
   href: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 bg-slate-200 dark:bg-slate-800 p-4 rounded-md h-28 overflow-auto">
+    <div className="flex flex-col gap-2 p-4 rounded-md h-28 overflow-auto">
       <a href={href} className="text-sm underline hover:no-underline">
         {title}
       </a>
