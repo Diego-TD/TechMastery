@@ -1,20 +1,29 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { enUS, esMX } from "@clerk/localizations";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import "./index.css";
+import "@/lib/i18n"; // initializes i18next before render
+import { LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import App from "./App.tsx";
 import { ErrorBoundary } from "./ErrorBoundary.tsx";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+
+// Clerk's localization is set once at mount from the persisted language.
+// Changing it is deferred — switching locale reloads the page
+const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+const clerkLocalization = storedLocale?.startsWith("es") ? esMX : enUS;
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <ErrorBoundary>
         <ClerkProvider
           publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+          localization={clerkLocalization}
         >
           <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
             <App />

@@ -1,0 +1,36 @@
+{
+  "shell": {
+    "title": "TechMastery",
+    "tagline": "Domina la tecnología que importa.",
+    "loading": "Cargando…"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar sesión",
+    "ctaHeadline": "Bienvenido a TechMastery",
+    "ctaSubtext": "Inicia sesión para empezar a seguir tu progreso."
+  },
+  "onboarding": {
+    "title": "Vamos a comenzar",
+    "subtitle": "Unos pasos rápidos para personalizar tu experiencia.",
+    "continue": "Continuar",
+    "skip": "Omitir por ahora"
+  },
+  "nav": {
+    "home": "Inicio",
+    "settings": "Ajustes",
+    "profile": "Perfil"
+  },
+  "emptyStates": {
+    "noData": "Aún no hay nada aquí.",
+    "noResults": "No se encontraron resultados.",
+    "comingSoon": "Próximamente."
+  },
+  "readiness": {
+    "notReady": "No listo",
+    "inProgress": "En progreso",
+    "ready": "Listo",
+    "mastered": "Dominado"
+  }
+}

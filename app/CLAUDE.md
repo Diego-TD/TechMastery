@@ -37,6 +37,21 @@ Convex agent skills for common tasks can be installed by running
 - Prefer existing shadcn components before adding custom primitives.
 - Use lucide icons.
 
+### i18n (En/Es)
+
+- i18next + react-i18next, initialized in `src/lib/i18n.ts`. One broad namespace
+  (`app`) per language; all keys live in `locales/<lng>/app.json` (alias `@locales`).
+- Use the **type-safe selector API**: `t(($) => $.section.key)` (enabled via
+  `types/i18n.d.ts`). Add new copy as nested keys in both `en` and `es` JSON files.
+- Locale is detected + persisted via `i18next-browser-languagedetector`
+  (localStorage key `tm.lang`). Switch with `useLocale().setLocale(...)`;
+  `<LanguageSwitcher>` (full + compact variants) is the UI.
+- **Clerk localization**: set once at mount in `src/main.tsx` from the persisted
+  language (`enUS`/`esMX` from `@clerk/localizations`). `setLocale` reloads the page
+  so Clerk re-reads the locale. Live (no-reload) Clerk locale switching is **deferred**
+  — changing the `localization` prop reactively crashes Clerk
+  (`removeChild`, clerk/javascript#1557). Revisit when Clerk fixes dynamic localization.
+
 ## Building A New Feature
 
 When requirements are clear, build a feature back-to-front in this order, reusing the existing patterns at each layer:

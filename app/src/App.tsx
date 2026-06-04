@@ -8,17 +8,20 @@ import {
 } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function App() {
+  const { t } = useTranslation();
   return (
     <>
       <header className="sticky top-0 z-10  p-4 border-b-2 flex flex-row justify-between items-center">
-        Convex + React + Clerk
+        {t(($) => $.shell.title)}
         <UserButton />
       </header>
       <main className="p-8 flex flex-col gap-16">
         <h1 className="text-4xl  font-serif  text-center">
-          Convex + React + Clerk
+          {t(($) => $.shell.tagline)}
         </h1>
         <Authenticated>
           <Content />
@@ -32,17 +35,28 @@ export default function App() {
 }
 
 function SignInForm() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-8 w-96 mx-auto">
-      <p>Log in to see the numbers</p>
+      <div className="flex justify-end">
+        <LanguageSwitcher variant="full" />
+      </div>
+      <div className="flex flex-col gap-1 text-center">
+        <h2 className="text-xl font-semibold">
+          {t(($) => $.auth.ctaHeadline)}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          {t(($) => $.auth.ctaSubtext)}
+        </p>
+      </div>
       <SignInButton mode="modal">
         <button className="text-sm px-4 py-2 rounded-md border-2">
-          Sign in
+          {t(($) => $.auth.signIn)}
         </button>
       </SignInButton>
       <SignUpButton mode="modal">
         <button className=" text-sm px-4 py-2 rounded-md border-2">
-          Sign up
+          {t(($) => $.auth.signUp)}
         </button>
       </SignUpButton>
     </div>

@@ -1,0 +1,36 @@
+{
+  "shell": {
+    "title": "TechMastery",
+    "tagline": "Master the tech that matters.",
+    "loading": "Loading…"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "ctaHeadline": "Welcome to TechMastery",
+    "ctaSubtext": "Sign in to start tracking your mastery."
+  },
+  "onboarding": {
+    "title": "Let's get you set up",
+    "subtitle": "A few quick steps to personalize your experience.",
+    "continue": "Continue",
+    "skip": "Skip for now"
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "emptyStates": {
+    "noData": "Nothing here yet.",
+    "noResults": "No results found.",
+    "comingSoon": "Coming soon."
+  },
+  "readiness": {
+    "notReady": "Not ready",
+    "inProgress": "In progress",
+    "ready": "Ready",
+    "mastered": "Mastered"
+  }
+}
