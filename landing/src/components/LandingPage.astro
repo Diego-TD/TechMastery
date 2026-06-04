@@ -1,0 +1,320 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { languages, type Lang } from "../i18n/ui";
+import { pathForLang } from "../i18n/utils";
+import type { LandingContent } from "../i18n/landing";
+
+type Props = {
+  lang: Lang;
+  copy: LandingContent;
+};
+
+const { lang, copy } = Astro.props;
+const appUrl = "https://beta.techmastery.dev/";
+const repoUrl = "https://github.com/Diego-TD/TechMastery";
+const igUrl = "https://www.instagram.com/diego.dtd/";
+const liUrl = "https://www.linkedin.com/in/diego-torres-durante/";
+const ghUserUrl = "https://github.com/Diego-TD";
+const langEntries = Object.entries(languages) as Array<[Lang, string]>;
+
+// Feature icons keyed by index (lucide outlines, inlined to avoid a dependency).
+const featureIcons = [
+  '<path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/><path d="M9 21V9"/>',
+  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 9v6a3 3 0 0 0 3 3h6"/><path d="M18 9v0"/>',
+  '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  '<path d="M12 3a6 6 0 0 0-6 6c0 1 .2 2 .6 3l-1.6 4 4-1.5A6 6 0 1 0 12 3z"/><path d="M12 8v4l2 1"/>',
+];
+
+const githubIcon =
+  '<path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>';
+
+// Stat icons, in the order of the evidence stats (phishing, exposure, password
+// manager, workshop). Lucide outlines.
+const statIcons = [
+  '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.5 12.5 7-7"/><path d="m13.5 5.5 2 2"/><path d="m17 3 3 3"/>',
+  '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+];
+
+// Approach principle icons (No shame, Calm over fear, People first).
+const principleIcons = [
+  '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>',
+  '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/>',
+  '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+];
+
+const instagramIcon =
+  '<rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>';
+const linkedinIcon =
+  '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>';
+---
+
+<BaseLayout lang={lang} title={copy.meta.title} description={copy.meta.description}>
+  <div class="site-shell">
+    <header class="topbar" aria-label="Primary">
+      <a class="brand" href={pathForLang(lang)} aria-label="TechMastery">
+        TechMastery
+        <span class="beta">beta</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#product">{copy.nav.product}</a>
+        <a href="#workshops">{copy.nav.workshops}</a>
+        <a href="#approach">{copy.nav.approach}</a>
+        <a href="#privacy">{copy.nav.privacy}</a>
+        <a href="#contact">{copy.nav.contact}</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="language-switcher" aria-label={copy.controls.language}>
+          {langEntries.map(([code]) => (
+            <a
+              href={pathForLang(code)}
+              class:list={["language-link", { active: code === lang }]}
+              aria-current={code === lang ? "page" : undefined}
+            >
+              {code.toUpperCase()}
+            </a>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          class="theme-toggle"
+          data-theme-toggle
+          aria-label={copy.controls.theme}
+        >
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        </button>
+
+        <a class="icon-link github-link" href={repoUrl} target="_blank" rel="noopener" aria-label={copy.controls.github}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+        </a>
+
+        <a class="button header-app-link" href={appUrl}>{copy.nav.app}</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <p class="eyebrow" data-reveal>{copy.hero.eyebrow}</p>
+        <h1 id="hero-title" data-reveal style="--reveal-delay: 60ms">
+          {copy.hero.title} <span class="accent">{copy.hero.titleAccent}</span>
+        </h1>
+        <p class="lead" data-reveal style="--reveal-delay: 140ms">{copy.hero.lead}</p>
+        <div class="hero-actions" data-reveal style="--reveal-delay: 220ms">
+          <a class="button button-primary button-lg" href={appUrl}>{copy.hero.primaryCta}</a>
+          <a class="button button-secondary button-lg" href="#product">{copy.hero.secondaryCta}</a>
+        </div>
+        <ul class="trust-list" data-reveal style="--reveal-delay: 300ms" aria-label="What to expect">
+          {copy.hero.trust.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <div class="product-frame" data-reveal style="--reveal-delay: 120ms">
+        <div class="product-window">
+          <div class="window-bar">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="window-url">beta.techmastery.dev</div>
+          </div>
+          <div class="window-shot">
+            <img class="shot-light" src="/shots/map-light.png" alt={copy.hero.shotAlt} width="1064" height="909" loading="eager" />
+            <img class="shot-dark" src="/shots/map-dark.png" alt={copy.hero.shotAlt} width="1064" height="909" loading="eager" />
+          </div>
+        </div>
+      </div>
+
+      <section id="product" class="section">
+        <div class="section-head center" data-reveal>
+          <p class="section-eyebrow">{copy.sections.product.eyebrow}</p>
+          <h2>{copy.sections.product.title}</h2>
+          <p>{copy.sections.product.body}</p>
+        </div>
+        <div class="feature-rows">
+          {copy.sections.product.features.map((feature, i) => (
+            <article class="feature-row" data-reveal>
+              <figure class="feature-media">
+                <div class="device-frame">
+                  <img class="shot-light" src={`/shots/${feature.shot}-light.png`} alt={feature.shotAlt} loading="lazy" />
+                  <img class="shot-dark" src={`/shots/${feature.shot}-dark.png`} alt={feature.shotAlt} loading="lazy" />
+                </div>
+              </figure>
+              <div class="feature-info">
+                <span class="feature-step">{String(i + 1).padStart(2, "0")}</span>
+                <span class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={featureIcons[i]} />
+                </span>
+                <h3>{feature.title}</h3>
+                <p>{feature.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="workshops" class="band">
+        <div class="band-inner">
+          <div class="section-head" data-reveal>
+            <p class="section-eyebrow">{copy.sections.workshop.eyebrow}</p>
+            <h2>{copy.sections.workshop.title}</h2>
+            <p>{copy.sections.workshop.body}</p>
+          </div>
+          <ol class="stepper">
+            {copy.sections.workshop.steps.map((step, i) => (
+              <li class="step" data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+                <span class="step-num">{i + 1}</span>
+                <div class="step-text">
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section id="approach" class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.approach.eyebrow}</p>
+          <h2>{copy.sections.approach.title}</h2>
+          <p>{copy.sections.approach.body}</p>
+        </div>
+        <div class="principle-grid">
+          {copy.sections.approach.principles.map((principle, i) => (
+            <article class="principle-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <span class="principle-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={principleIcons[i]} />
+              </span>
+              <h3>{principle.title}</h3>
+              <p>{principle.body}</p>
+            </article>
+          ))}
+        </div>
+        <blockquote class="principle-quote" data-reveal>
+          {copy.sections.approach.quote}
+          <cite>{copy.sections.approach.quoteCite}</cite>
+        </blockquote>
+      </section>
+
+      <section id="privacy" class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.privacy.eyebrow}</p>
+          <h2>{copy.sections.privacy.title}</h2>
+          <p>{copy.sections.privacy.body}</p>
+        </div>
+        <div class="data-columns">
+          <article class="data-card keep" data-reveal>
+            <h3>{copy.sections.privacy.storesTitle}</h3>
+            <ul>
+              {copy.sections.privacy.stores.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+          <article class="data-card avoid" data-reveal style="--reveal-delay: 80ms">
+            <h3>{copy.sections.privacy.avoidsTitle}</h3>
+            <ul>
+              {copy.sections.privacy.avoids.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.evidence.eyebrow}</p>
+          <h2>{copy.sections.evidence.title}</h2>
+          <p>{copy.sections.evidence.body}</p>
+        </div>
+        <div class="stats-grid">
+          {copy.sections.evidence.stats.map((stat, i) => (
+            <article class="stat-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <span class="stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={statIcons[i]} />
+              </span>
+              <strong>{stat.value}</strong>
+              <span class="stat-label">{stat.label}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="sdg" data-reveal>
+        <img class="sdg-logo" src="/04QualityEducation.svg" alt={copy.sdg.alt} width="405" height="405" loading="lazy" />
+        <div class="sdg-text">
+          <p class="section-eyebrow">{copy.sdg.eyebrow}</p>
+          <h2>{copy.sdg.title}</h2>
+          <p>{copy.sdg.body}</p>
+        </div>
+      </section>
+
+      <section class="open-source" data-reveal>
+        <span class="os-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor" set:html={githubIcon} />
+        </span>
+        <div class="os-text">
+          <p class="section-eyebrow">{copy.openSource.eyebrow}</p>
+          <h2>{copy.openSource.title}</h2>
+          <p>{copy.openSource.body}</p>
+        </div>
+        <a class="button button-secondary button-lg os-cta" href={repoUrl} target="_blank" rel="noopener">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+          {copy.openSource.cta}
+        </a>
+      </section>
+
+      <section class="final-cta" data-reveal>
+        <div>
+          <h2>{copy.finalCta.title}</h2>
+          <p>{copy.finalCta.body}</p>
+        </div>
+        <div class="hero-actions">
+          <a class="button button-primary button-lg" href={appUrl}>{copy.finalCta.primaryCta}</a>
+          <a class="button button-secondary button-lg" href="#privacy">{copy.finalCta.secondaryCta}</a>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact" data-reveal>
+        <div class="contact-head">
+          <img class="contact-avatar" src="/me.jpeg" alt={copy.contact.name} width="96" height="96" loading="lazy" />
+          <p class="section-eyebrow">{copy.contact.eyebrow}</p>
+          <h2>{copy.contact.title}</h2>
+          <p>{copy.contact.body}</p>
+        </div>
+        <div class="contact-links">
+          <a class="social-link" href={igUrl} target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={instagramIcon} />
+            <span>Instagram</span>
+          </a>
+          <a class="social-link" href={liUrl} target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={linkedinIcon} />
+            <span>LinkedIn</span>
+          </a>
+          <a class="social-link" href={ghUserUrl} target="_blank" rel="noopener" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor" set:html={githubIcon} />
+            <span>GitHub</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>{copy.footer.summary}</p>
+      <div class="footer-links">
+        <a href={repoUrl} target="_blank" rel="noopener">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+          {copy.footer.github}
+        </a>
+        <a href={appUrl}>{copy.footer.app} →</a>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
