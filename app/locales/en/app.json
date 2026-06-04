@@ -11,6 +11,10 @@
     "ctaHeadline": "Welcome to TechMastery",
     "ctaSubtext": "Sign in to start tracking your mastery."
   },
+  "landing": {
+    "valueProp": "Keep your accounts, devices, and readiness in one calm place — and build real confidence with the tech you rely on.",
+    "signInHint": "Already have an account?"
+  },
   "onboarding": {
     "title": "Let's get you set up",
     "subtitle": "A few quick steps to personalize your experience.",
@@ -20,7 +24,17 @@
   "nav": {
     "home": "Home",
     "settings": "Settings",
-    "profile": "Profile"
+    "profile": "Profile",
+    "app": "Overview",
+    "accounts": "Accounts",
+    "devices": "Devices",
+    "readiness": "Readiness"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "emptyStates": {
     "noData": "Nothing here yet.",
@@ -32,5 +46,14 @@
     "inProgress": "In progress",
     "ready": "Ready",
     "mastered": "Mastered"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has moved.",
+    "backHome": "Back to home"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "retry": "Try again"
   }
 }

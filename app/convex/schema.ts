@@ -9,7 +9,4 @@ export default defineSchema({
     status: userStatus,
     updatedAt: v.number(),
   }).index("by_tokenIdentifier", ["tokenIdentifier"]),
-  numbers: defineTable({
-    value: v.number(),
-  }),
 });

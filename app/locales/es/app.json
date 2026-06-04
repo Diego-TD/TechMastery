@@ -11,6 +11,10 @@
     "ctaHeadline": "Bienvenido a TechMastery",
     "ctaSubtext": "Inicia sesión para empezar a seguir tu progreso."
   },
+  "landing": {
+    "valueProp": "Lleva tus cuentas, dispositivos y tu progreso en un solo lugar, con calma — y gana confianza real con la tecnología que usas.",
+    "signInHint": "¿Ya tienes una cuenta?"
+  },
   "onboarding": {
     "title": "Vamos a comenzar",
     "subtitle": "Unos pasos rápidos para personalizar tu experiencia.",
@@ -20,7 +24,17 @@
   "nav": {
     "home": "Inicio",
     "settings": "Ajustes",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "app": "Resumen",
+    "accounts": "Cuentas",
+    "devices": "Dispositivos",
+    "readiness": "Progreso"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
   },
   "emptyStates": {
     "noData": "Aún no hay nada aquí.",
@@ -32,5 +46,14 @@
     "inProgress": "En progreso",
     "ready": "Listo",
     "mastered": "Dominado"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o se ha movido.",
+    "backHome": "Volver al inicio"
+  },
+  "errors": {
+    "title": "Algo salió mal",
+    "retry": "Intentar de nuevo"
   }
 }

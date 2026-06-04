@@ -4,10 +4,11 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { enUS, esMX } from "@clerk/localizations";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
+import { BrowserRouter } from "react-router";
 import "./index.css";
 import "@/lib/i18n"; // initializes i18next before render
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n";
-import App from "./App.tsx";
+import { AppRoutes } from "./routes/AppRoutes.tsx";
 import { ErrorBoundary } from "./ErrorBoundary.tsx";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 
@@ -26,7 +27,9 @@ createRoot(document.getElementById("root")!).render(
           localization={clerkLocalization}
         >
           <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-            <App />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
           </ConvexProviderWithClerk>
         </ClerkProvider>
       </ErrorBoundary>
