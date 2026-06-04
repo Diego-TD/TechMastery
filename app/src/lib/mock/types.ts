@@ -143,27 +143,30 @@ export type Readiness = {
 };
 
 export type SimulationKind =
-  | "lose_phone"
-  | "laptop_dies"
+  | "lose_device"
+  | "lose_phone_number"
   | "email_locked"
   | "card_stolen"
-  | "cloud_unavailable"
   | "password_manager_unavailable";
 
 export type SimulationImpact = {
   accountId: string;
   reason:
     | "lives_on"
+    | "identifier_phone"
     | "recovery_email"
     | "recovery_phone"
     | "social_login"
     | "authenticator"
-    | "stored_here";
+    | "stored_here"
+    | "password_only"
+    | "payment_reissue";
   severity: "blocked" | "at_risk" | "ok";
 };
 
 export type SimulationResult = {
   kind: SimulationKind;
+  targetId?: string;
   impacts: SimulationImpact[];
   blockedCount: number;
   atRiskCount: number;

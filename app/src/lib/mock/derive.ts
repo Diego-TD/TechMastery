@@ -152,7 +152,7 @@ export function phoneUsage(accounts: Account[], phoneId: string): Account[] {
   );
 }
 
-function topHub(accounts: Account[]): { id: string; dependents: string[] } | null {
+export function topHub(accounts: Account[]): { id: string; dependents: string[] } | null {
   let best: { id: string; dependents: string[] } | null = null;
   for (const [id, dependents] of dependencyFanIn(accounts)) {
     if (!best || dependents.length > best.dependents.length) best = { id, dependents };
@@ -246,55 +246,93 @@ export function computeReadiness(data: MapData): Readiness {
 // Simulations — "what breaks if…"
 // ---------------------------------------------------------------------------
 
-export function runSimulation(data: MapData, kind: SimulationKind): SimulationResult {
-  const { accounts, devices, authenticatorApps } = data;
-  const impacts: SimulationImpact[] = [];
-  const push = (i: SimulationImpact) => impacts.push(i);
+export function runSimulation(
+  data: MapData,
+  kind: SimulationKind,
+  targetId?: string,
+): SimulationResult {
+  const { accounts, devices, authenticatorApps, phoneNumbers } = data;
+  const impacts = new Map<string, SimulationImpact>();
+  const severityOrder: Record<SimulationImpact["severity"], number> = { blocked: 0, at_risk: 1, ok: 2 };
+  const push = (i: SimulationImpact) => {
+    const existing = impacts.get(i.accountId);
+    if (!existing || severityOrder[i.severity] < severityOrder[existing.severity]) {
+      impacts.set(i.accountId, i);
+    }
+  };
 
-  const deviceKindOf = (id: string) => devices.find((d) => d.id === id)?.kind;
-  const usesDeviceKind = (a: Account, kinds: string[]) =>
-    a.deviceIds.some((id) => kinds.includes(deviceKindOf(id) ?? ""));
   const appById = (id?: string) => authenticatorApps.find((x) => x.id === id);
-  const phoneDeviceIds = new Set(devices.filter((d) => d.kind === "phone").map((d) => d.id));
-  /** A recovery path that doesn't route through the same phone. */
-  const hasAltEmailRecovery = (a: Account) =>
-    a.recoveryOptions.some((r) => r.type === "email" && r.targetAccountId);
+  const hasAlternateRecovery = (a: Account, unavailablePhoneId?: string) =>
+    a.recoveryOptions.some((r) => {
+      if (r.type === "none" || r.type === "unknown") return false;
+      if (unavailablePhoneId && r.type === "phone" && r.phoneId === unavailablePhoneId) return false;
+      return true;
+    });
+  const hasEmailRecovery = (a: Account, unavailableAccountId?: string) =>
+    a.recoveryOptions.some(
+      (r) => r.type === "email" && r.targetAccountId && r.targetAccountId !== unavailableAccountId,
+    );
+  const onlyRealMfa = (a: Account, method: string) => {
+    const realMethods = a.mfaMethods.filter((m) => m !== "none" && m !== "unknown");
+    return realMethods.length === 1 && realMethods[0] === method;
+  };
+  const locationMentionsDevice = (location: string | undefined, deviceId: string) => {
+    const device = devices.find((d) => d.id === deviceId);
+    if (!device || !location) return false;
+    const haystack = location.toLowerCase();
+    const nameParts = device.name.toLowerCase().split(/\W+/).filter((part) => part.length >= 4);
+    return haystack.includes(device.kind) || nameParts.some((part) => haystack.includes(part));
+  };
   const hub = topHub(accounts);
 
   switch (kind) {
-    case "lose_phone": {
+    case "lose_device": {
+      const deviceId = targetId ?? devices[0]?.id;
+      if (!deviceId) break;
       for (const a of accounts) {
         const app = appById(a.authenticatorAppId);
-        const authOnPhone = Boolean(app?.deviceId && phoneDeviceIds.has(app.deviceId));
-        const smsOnPhone = a.mfaMethods.includes("sms");
-        const phoneRecovery = a.recoveryOptions.some((r) => r.type === "phone");
-        if (!authOnPhone && !smsOnPhone && !phoneRecovery && !usesDeviceKind(a, ["phone"])) continue;
+        const authOnDevice = a.mfaMethods.includes("authenticator_app") && app?.deviceId === deviceId;
+        const onlyAuthOnDevice = authOnDevice && onlyRealMfa(a, "authenticator_app");
+        const usesDevice = a.deviceIds.includes(deviceId);
+        const keyFileStoredHere = Boolean(a.keyFile && locationMentionsDevice(a.keyFile.location, deviceId));
 
-        const codeLocked = authOnPhone || smsOnPhone; // 2FA prompt you can't answer
-        const rescued = a.hasBackupCodes || hasAltEmailRecovery(a);
-        push({
-          accountId: a.id,
-          reason: authOnPhone ? "authenticator" : phoneRecovery || smsOnPhone ? "recovery_phone" : "lives_on",
-          severity: codeLocked ? (rescued ? "at_risk" : "blocked") : "at_risk",
-        });
+        if (keyFileStoredHere) {
+          push({ accountId: a.id, reason: "stored_here", severity: "blocked" });
+        }
+        if (authOnDevice) {
+          const rescued = a.hasBackupCodes || hasAlternateRecovery(a);
+          push({
+            accountId: a.id,
+            reason: "authenticator",
+            severity: onlyAuthOnDevice && !rescued ? "blocked" : "at_risk",
+          });
+        } else if (usesDevice) {
+          push({ accountId: a.id, reason: "lives_on", severity: "at_risk" });
+        }
       }
       break;
     }
-    case "laptop_dies": {
-      const onLaptop = (loc?: string) => /laptop|macbook|notebook|computer|usb/i.test(loc ?? "");
+    case "lose_phone_number": {
+      const phoneId = targetId ?? phoneNumbers[0]?.id;
+      if (!phoneId) break;
       for (const a of accounts) {
-        const keyFileTrapped = a.keyFile && onLaptop(a.keyFile.location);
-        if (!usesDeviceKind(a, ["laptop", "desktop"]) && !keyFileTrapped) continue;
+        const usesAsIdentifier = a.identifierPhoneId === phoneId;
+        const phoneRecovery = a.recoveryOptions.some((r) => r.type === "phone" && r.phoneId === phoneId);
+        const smsLinkedToPhone = a.mfaMethods.includes("sms") && (usesAsIdentifier || phoneRecovery);
+        if (!usesAsIdentifier && !phoneRecovery && !smsLinkedToPhone) continue;
+
+        const hasFallback = a.hasBackupCodes || hasEmailRecovery(a) || hasAlternateRecovery(a, phoneId);
+        const blocksPrimaryPath = smsLinkedToPhone || (phoneRecovery && !hasFallback);
         push({
           accountId: a.id,
-          reason: keyFileTrapped ? "stored_here" : "lives_on",
-          severity: keyFileTrapped ? "blocked" : a.importance === "high" ? "at_risk" : "ok",
+          reason: smsLinkedToPhone || phoneRecovery ? "recovery_phone" : "identifier_phone",
+          severity: blocksPrimaryPath && !hasFallback ? "blocked" : "at_risk",
         });
       }
       break;
     }
     case "email_locked": {
-      const hubId = hub?.id;
+      const hubId = targetId ?? hub?.id;
       for (const a of accounts) {
         if (a.id === hubId) {
           push({ accountId: a.id, reason: "lives_on", severity: "blocked" });
@@ -302,6 +340,8 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
         }
         if (a.socialLoginAccountId === hubId) {
           push({ accountId: a.id, reason: "social_login", severity: "blocked" });
+        } else if (a.identifierAccountId === hubId) {
+          push({ accountId: a.id, reason: "recovery_email", severity: "blocked" });
         } else if (a.recoveryOptions.some((r) => r.type === "email" && r.targetAccountId === hubId)) {
           push({ accountId: a.id, reason: "recovery_email", severity: "at_risk" });
         }
@@ -311,25 +351,14 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
     case "card_stolen": {
       // A stolen card is mostly a re-issue: payments pause, accounts survive.
       for (const a of accounts) {
-        if (a.lifeArea === "banking") push({ accountId: a.id, reason: "lives_on", severity: "at_risk" });
-        else if (a.lifeArea === "shopping") push({ accountId: a.id, reason: "stored_here", severity: "ok" });
-      }
-      break;
-    }
-    case "cloud_unavailable": {
-      for (const a of accounts) {
-        if (a.lifeArea === "cloud" && !a.isPasswordManager)
-          push({ accountId: a.id, reason: "lives_on", severity: a.importance === "high" ? "blocked" : "at_risk" });
-        else if (
-          /cloud|drive|icloud/i.test(a.backupCodesLocation ?? "") ||
-          /cloud|drive|icloud/i.test(a.keyFile?.location ?? "")
-        )
-          push({ accountId: a.id, reason: "stored_here", severity: "at_risk" });
+        if (a.lifeArea === "banking") push({ accountId: a.id, reason: "payment_reissue", severity: "at_risk" });
+        else if (a.lifeArea === "shopping")
+          push({ accountId: a.id, reason: "payment_reissue", severity: "ok" });
       }
       break;
     }
     case "password_manager_unavailable": {
-      const manager = accounts.find((a) => a.isPasswordManager);
+      const manager = accounts.find((a) => a.id === targetId) ?? accounts.find((a) => a.isPasswordManager);
       for (const a of accounts) {
         if (a.isPasswordManager) {
           push({ accountId: a.id, reason: "lives_on", severity: "blocked" });
@@ -341,7 +370,7 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
         if (hasAlternative) continue;
         push({
           accountId: a.id,
-          reason: "stored_here",
+          reason: "password_only",
           severity: hasRecovery(a) ? "at_risk" : "blocked",
         });
       }
@@ -349,10 +378,13 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
     }
   }
 
+  const impactList = [...impacts.values()];
+
   return {
     kind,
-    impacts,
-    blockedCount: impacts.filter((i) => i.severity === "blocked").length,
-    atRiskCount: impacts.filter((i) => i.severity === "at_risk").length,
+    targetId,
+    impacts: impactList,
+    blockedCount: impactList.filter((i) => i.severity === "blocked").length,
+    atRiskCount: impactList.filter((i) => i.severity === "at_risk").length,
   };
 }

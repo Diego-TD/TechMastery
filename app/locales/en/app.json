@@ -312,12 +312,11 @@
     "pickScenario": "Pick a scenario",
     "runAgain": "Try another scenario",
     "scenarios": {
-      "lose_phone": { "title": "I lose my phone", "question": "What breaks if my phone is gone?" },
-      "laptop_dies": { "title": "My laptop dies", "question": "What breaks if my laptop stops working?" },
-      "email_locked": { "title": "My main email is locked", "question": "What breaks if I can't get into my main email?" },
+      "lose_device": { "title": "Lose {{name}}", "question": "What breaks if {{name}} is gone?" },
+      "lose_phone_number": { "title": "Lose {{name}}", "question": "What breaks if {{name}} stops receiving codes?" },
+      "email_locked": { "title": "Lose access to {{name}}", "question": "What breaks if I can't get into {{name}}?" },
       "card_stolen": { "title": "My card is stolen", "question": "What breaks if my card details are stolen?" },
-      "cloud_unavailable": { "title": "My cloud is unavailable", "question": "What breaks if my cloud storage is locked?" },
-      "password_manager_unavailable": { "title": "My password manager is unavailable", "question": "What breaks if I can't open my password manager?" }
+      "password_manager_unavailable": { "title": "{{name}} is unavailable", "question": "What breaks if I can't open {{name}}?" }
     },
     "summaryBlocked": "{{count}} could be locked out",
     "summaryAtRisk": "{{count}} at risk",
@@ -326,11 +325,14 @@
     "severity": { "blocked": "Locked out", "at_risk": "At risk", "ok": "Probably fine" },
     "reasons": {
       "lives_on": "You use this here",
+      "identifier_phone": "This phone number identifies the account",
       "recovery_email": "Recovers through this email",
       "recovery_phone": "Needs a code from your phone",
       "social_login": "You sign in with the lost account",
       "authenticator": "Its 2FA code is on the lost device",
-      "stored_here": "Its access is stored here"
+      "stored_here": "Its access is stored here",
+      "password_only": "You need the stored password and have no sign-in alternative",
+      "payment_reissue": "Payment may pause until the card is re-issued"
     },
     "whatToDo": "What you can do now"
   },

@@ -312,12 +312,11 @@
     "pickScenario": "Elige un escenario",
     "runAgain": "Probar otro escenario",
     "scenarios": {
-      "lose_phone": { "title": "Pierdo mi teléfono", "question": "¿Qué se rompe si pierdo mi teléfono?" },
-      "laptop_dies": { "title": "Mi laptop deja de funcionar", "question": "¿Qué se rompe si mi laptop deja de funcionar?" },
-      "email_locked": { "title": "Pierdo acceso a mi correo principal", "question": "¿Qué se rompe si no puedo entrar a mi correo principal?" },
+      "lose_device": { "title": "Pierdo {{name}}", "question": "¿Qué se rompe si pierdo {{name}}?" },
+      "lose_phone_number": { "title": "Pierdo {{name}}", "question": "¿Qué se rompe si {{name}} deja de recibir códigos?" },
+      "email_locked": { "title": "Pierdo acceso a {{name}}", "question": "¿Qué se rompe si no puedo entrar a {{name}}?" },
       "card_stolen": { "title": "Me roban la tarjeta", "question": "¿Qué se rompe si roban los datos de mi tarjeta?" },
-      "cloud_unavailable": { "title": "Mi nube no está disponible", "question": "¿Qué se rompe si bloquean mi almacenamiento en la nube?" },
-      "password_manager_unavailable": { "title": "No puedo abrir mi gestor de contraseñas", "question": "¿Qué se rompe si no puedo abrir mi gestor de contraseñas?" }
+      "password_manager_unavailable": { "title": "{{name}} no está disponible", "question": "¿Qué se rompe si no puedo abrir {{name}}?" }
     },
     "summaryBlocked": "{{count}} podrían quedar bloqueadas",
     "summaryAtRisk": "{{count}} en riesgo",
@@ -326,11 +325,14 @@
     "severity": { "blocked": "Bloqueada", "at_risk": "En riesgo", "ok": "Probablemente bien" },
     "reasons": {
       "lives_on": "La usas aquí",
+      "identifier_phone": "Este número identifica la cuenta",
       "recovery_email": "Se recupera con este correo",
       "recovery_phone": "Necesita un código de tu teléfono",
       "social_login": "Inicias sesión con la cuenta perdida",
       "authenticator": "Su código 2FA está en el dispositivo perdido",
-      "stored_here": "Su acceso está guardado aquí"
+      "stored_here": "Su acceso está guardado aquí",
+      "password_only": "Necesitas la contraseña guardada y no hay otra forma de iniciar sesión",
+      "payment_reissue": "El pago puede pausarse hasta reponer la tarjeta"
     },
     "whatToDo": "Qué puedes hacer ahora"
   },

@@ -211,9 +211,9 @@ export function useReadiness(): Readiness {
   return useMemo(() => computeReadiness(data), [data]);
 }
 
-export function useSimulation(kind: SimulationKind): SimulationResult {
+export function useSimulation(kind: SimulationKind, targetId?: string): SimulationResult {
   const { data } = useStore();
-  return useMemo(() => runSimulation(data, kind), [data, kind]);
+  return useMemo(() => runSimulation(data, kind, targetId), [data, kind, targetId]);
 }
 
 export function useResetMap() {
