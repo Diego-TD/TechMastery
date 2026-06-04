@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { KeyRound, Lightbulb, Pencil } from "lucide-react";
 import { useAccount, useInventory, useReadiness } from "@/lib/mock/store";
 import type { Account } from "@/lib/mock/types";
@@ -48,6 +49,7 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
           onSubmit={(input) => {
             updateAccount(account.id, input);
             setEditing(false);
+            toast.success(t(($) => $.toasts.accountUpdated));
           }}
           onCancel={() => setEditing(false)}
         />
@@ -75,8 +77,10 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
                 {nameOf(accounts, account.socialLoginAccountId)}
               </Row>
             )}
-            <Row label={t(($) => $.accountForm.twoFactor)}>
-              {t(($) => $.account.twoFactor[account.twoFactor])}
+            <Row label={t(($) => $.accountForm.sectionMfa)}>
+              {(account.mfaMethods.length === 0 ? (["unknown"] as const) : account.mfaMethods)
+                .map((m) => t(($) => $.account.twoFactor[m]))
+                .join(", ")}
               {account.authenticatorAppId
                 ? ` · ${authenticatorApps.find((x) => x.id === account.authenticatorAppId)?.name ?? ""}`
                 : ""}

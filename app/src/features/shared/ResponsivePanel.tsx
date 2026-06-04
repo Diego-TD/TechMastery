@@ -1,5 +1,17 @@
 import type { ReactNode } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+/** True when an event target lives inside a Radix popover, Select, or toast. */
+function fromPopover(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    Boolean(
+      target.closest(
+        "[data-radix-popper-content-wrapper],[data-radix-select-viewport],[data-slot='select-content'],[data-sonner-toaster]",
+      ),
+    )
+  );
+}
 import {
   Drawer,
   DrawerContent,
@@ -34,7 +46,17 @@ export function ResponsivePanel({ open, onOpenChange, title, description, childr
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent>
+        <DrawerContent
+          className="bg-background"
+          // A tap on an open Select/dropdown (portaled outside the drawer) must
+          // NOT dismiss the drawer and lose the user's input.
+          onPointerDownOutside={(e) => {
+            if (fromPopover(e.target)) e.preventDefault();
+          }}
+          onInteractOutside={(e) => {
+            if (fromPopover(e.target)) e.preventDefault();
+          }}
+        >
           <DrawerHeader className="text-left">
             <DrawerTitle>{title}</DrawerTitle>
             {description && <DrawerDescription>{description}</DrawerDescription>}

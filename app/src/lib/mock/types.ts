@@ -43,9 +43,12 @@ export type Account = {
   /** When `loginMethods` includes "social", the account you sign in *with*. */
   socialLoginAccountId?: string;
 
-  // Second factor.
-  twoFactor: TwoFactorStatus;
-  /** When `twoFactor === "authenticator_app"`, which authenticator holds it. */
+  /**
+   * MFA methods in use. Either exactly `["none"]`, exactly `["unknown"]`, or any
+   * mix of "sms" / "authenticator_app" / "security_key". Empty == unknown.
+   */
+  mfaMethods: TwoFactorStatus[];
+  /** When `mfaMethods` includes "authenticator_app", which authenticator holds it. */
   authenticatorAppId?: string;
 
   // Recovery — how you'd get back in (can be several).

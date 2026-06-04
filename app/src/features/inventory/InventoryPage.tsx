@@ -12,6 +12,7 @@ import {
 } from "@/features/shared/display";
 import { AddAccountPanel } from "./AddAccountPanel";
 import { AccountDetailPanel } from "./AccountDetailPanel";
+import { DeviceDetailPanel } from "./DeviceDetailPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -51,6 +52,7 @@ export function InventoryPage() {
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
   const [detailId, setDetailId] = useState<string | undefined>();
+  const [detailDeviceId, setDetailDeviceId] = useState<string | undefined>();
 
   const filteredAccounts = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -143,7 +145,9 @@ export function InventoryPage() {
               />
             ))}
           {showDevices &&
-            filteredDevices.map((d) => <DeviceCard key={d.id} device={d} />)}
+            filteredDevices.map((d) => (
+              <DeviceCard key={d.id} device={d} onClick={() => setDetailDeviceId(d.id)} />
+            ))}
         </div>
       )}
 
@@ -152,6 +156,11 @@ export function InventoryPage() {
         accountId={detailId}
         open={detailId !== undefined}
         onOpenChange={(o) => !o && setDetailId(undefined)}
+      />
+      <DeviceDetailPanel
+        deviceId={detailDeviceId}
+        open={detailDeviceId !== undefined}
+        onOpenChange={(o) => !o && setDetailDeviceId(undefined)}
       />
     </div>
   );
@@ -211,11 +220,17 @@ function AccountCard({
   );
 }
 
-function DeviceCard({ device }: { device: Device }) {
+function DeviceCard({ device, onClick }: { device: Device; onClick: () => void }) {
   const { t } = useTranslation();
   const Icon = DEVICE_ICON[device.kind];
   return (
-    <Card className="gap-0 p-3">
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
+      className="cursor-pointer gap-0 p-3 transition-colors hover:bg-muted/50"
+    >
       <div className="flex items-center gap-3">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
           <Icon className="size-4 text-muted-foreground" />

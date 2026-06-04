@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import type { LifeArea } from "@shared/enums";
 import { useInventory } from "@/lib/mock/store";
 import { ResponsivePanel } from "@/features/shared/ResponsivePanel";
@@ -29,6 +30,7 @@ export function AddAccountPanel({ open, onOpenChange, lockedLifeArea, onAdded }:
         onSubmit={(input) => {
           const id = addAccount(input);
           onOpenChange(false);
+          toast.success(t(($) => $.toasts.accountAdded));
           onAdded?.(id);
         }}
         onCancel={() => onOpenChange(false)}

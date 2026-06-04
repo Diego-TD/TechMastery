@@ -28,6 +28,12 @@
     "yes": "Sí",
     "no": "No"
   },
+  "toasts": {
+    "accountAdded": "Cuenta agregada",
+    "accountUpdated": "Cuenta actualizada",
+    "deviceAdded": "Dispositivo agregado",
+    "deviceUpdated": "Dispositivo actualizado"
+  },
   "onboarding": {
     "title": "Vamos a comenzar",
     "subtitle": "Unos pasos rápidos para personalizar tu experiencia.",
@@ -85,7 +91,7 @@
     },
     "loginMethods": {
       "password": "Contraseña",
-      "passkey": "Llave de acceso",
+      "passkey": "Passkey",
       "email_code": "Código por correo",
       "social": "Inicio social"
     },
@@ -149,7 +155,9 @@
     "allAreas": "Todas las áreas",
     "filterByArea": "Área de vida",
     "fitView": "Ajustar a la vista",
+    "views": { "tree": "Árbol", "web": "Red" },
     "hint": "Pellizca para acercar, arrastra para mover. Toca un nodo para ver detalles.",
+    "webHint": "Arrastra los nodos para reacomodar. Toca una cuenta para ver detalles.",
     "legendTitle": "Leyenda",
     "legend": {
       "account": "Cuenta",
@@ -177,6 +185,7 @@
     "recoversVia": "Recuperación",
     "signsInWith": "Inicia sesión con",
     "keyFile": "Archivo clave",
+    "onThisDevice": "Cuentas en este dispositivo",
     "noDevice": "Sin dispositivo vinculado",
     "noRecovery": "Sin ruta de recuperación",
     "dependedOnBy": "{{count}} cuentas dependen de esta",
@@ -196,6 +205,8 @@
     "identifierPlaceholder": "p. ej. d•••@gmail.com (opcional)",
     "sectionLogin": "Método de inicio",
     "sectionTwoFactor": "Segundo factor (2FA)",
+    "sectionMfa": "Multifactor (MFA)",
+    "mfaHint": "Elige todas las que apliquen. «Ninguno» y «No sé» van solos.",
     "sectionRecovery": "Opciones de recuperación",
     "recoveryEmpty": "Aún sin ruta de recuperación — agrega una si la conoces.",
     "addRecovery": "Agregar recuperación",
@@ -230,6 +241,7 @@
   },
   "deviceForm": {
     "addTitle": "Agregar un dispositivo",
+    "editTitle": "Editar dispositivo",
     "name": "Nombre del dispositivo",
     "namePlaceholder": "p. ej. iPhone 13, MacBook Air",
     "kind": "Tipo",
@@ -261,6 +273,7 @@
       "unresolved_unknowns": { "title": "Preguntas abiertas", "desc": "Menos respuestas \"no sé\" en tus cuentas." }
     },
     "weakItems": "Necesita atención",
+    "allCovered": "Todo cubierto — bien hecho.",
     "actionsTitle": "Próximas acciones recomendadas",
     "noActions": "Sin acciones por ahora — tu mapa se ve sano."
   },
@@ -269,7 +282,7 @@
     "enable_2fa": { "title": "Activa 2FA en {{name}}", "why": "Un segundo factor detiene la mayoría de los robos de cuenta, aunque se filtre la contraseña." },
     "add_recovery": { "title": "Configura una recuperación para {{name}}", "why": "Sin ella, perder la contraseña puede significar perder la cuenta para siempre." },
     "save_backup_codes": { "title": "Guarda códigos de respaldo para {{name}}", "why": "Si pierdes tu teléfono, los códigos de respaldo suelen ser la única forma de volver a entrar." },
-    "reduce_google_dependency": { "title": "Reduce cuánto depende de {{name}}", "why": "Muchas cuentas se recuperan o inician sesión con esta — si se pierde, se rompe mucho a la vez." },
+    "reduce_google_dependency": { "title": "Considera una segunda ruta además de {{name}}", "why": "Muchas cuentas se recuperan o inician sesión con esta. Una ruta de respaldo evita que una sola falla te deje fuera de todo — solo vale la pena si te resulta fácil." },
     "set_device_lock": { "title": "Agrega un bloqueo de pantalla a {{name}}", "why": "Un bloqueo mantiene tus cuentas seguras si pierden o roban el dispositivo." },
     "resolve_unknown": { "title": "Completa lo desconocido de {{name}}", "why": "Saber cómo inicias sesión y te recuperas es el primer paso para protegerla." }
   },

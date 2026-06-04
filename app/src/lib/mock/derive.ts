@@ -111,7 +111,12 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
 // ---------------------------------------------------------------------------
 
 const isUnknown = (v: string) => v === "unknown";
-const hasTwoFactor = (a: Account) => a.twoFactor !== "none" && a.twoFactor !== "unknown";
+const REAL_MFA = ["sms", "authenticator_app", "security_key"] as const;
+const hasTwoFactor = (a: Account) => a.mfaMethods.some((m) => (REAL_MFA as readonly string[]).includes(m));
+const mfaUnknown = (a: Account) => a.mfaMethods.length === 0 || a.mfaMethods.includes("unknown");
+/** Accounts whose MFA issues backup codes (app / security key) — only these can "save backup codes". */
+const backupRelevant = (a: Account) =>
+  a.mfaMethods.includes("authenticator_app") || a.mfaMethods.includes("security_key");
 const hasRecovery = (a: Account) => a.recoveryOptions.length > 0;
 const matters = (a: Account) => a.importance === "high" || a.importance === "medium";
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
@@ -145,22 +150,21 @@ function topHub(accounts: Account[]): { id: string; dependents: string[] } | nul
 export function computeReadiness(data: MapData): Readiness {
   const { accounts, devices } = data;
   const important = accounts.filter(matters);
-  const highImportance = accounts.filter((a) => a.importance === "high");
 
   const protectionWeak = important.filter((a) => !hasTwoFactor(a)).map((a) => a.id);
   const recoveryWeak = accounts.filter((a) => !hasRecovery(a)).map((a) => a.id);
   const deviceWeak = devices
     .filter((d) => d.lock === "none" || d.lock === "unknown" || !d.findMyEnabled)
     .map((d) => d.id);
-  const backupWeak = highImportance.filter((a) => !a.hasBackupCodes).map((a) => a.id);
+  // Only suggest backup codes where they actually exist (app/key MFA).
+  const backupCandidates = accounts.filter(backupRelevant);
+  const backupWeak = backupCandidates.filter((a) => !a.hasBackupCodes).map((a) => a.id);
 
   const hub = topHub(accounts);
   const hubFan = hub ? hub.dependents.length : 0;
 
   const unknownWeak = accounts
-    .filter(
-      (a) => isUnknown(a.identifierType) || a.loginMethods.length === 0 || isUnknown(a.twoFactor),
-    )
+    .filter((a) => isUnknown(a.identifierType) || a.loginMethods.length === 0 || mfaUnknown(a))
     .map((a) => a.id);
 
   const categories: ReadinessCategory[] = [
@@ -181,13 +185,13 @@ export function computeReadiness(data: MapData): Readiness {
     },
     {
       key: "backup_awareness",
-      score: clamp(pct(highImportance.length - backupWeak.length, highImportance.length)),
+      score: clamp(pct(backupCandidates.length - backupWeak.length, backupCandidates.length)),
       weakItemIds: backupWeak,
     },
     {
       key: "dependency_visibility",
       score: clamp(100 - Math.max(0, hubFan - 1) * 14),
-      weakItemIds: hub && hubFan > 2 ? hub.dependents : [],
+      weakItemIds: hub && hubFan > 3 ? hub.dependents : [],
     },
     {
       key: "unresolved_unknowns",
@@ -212,8 +216,8 @@ export function computeReadiness(data: MapData): Readiness {
     actions.push({ id: `add_recovery-${id}`, kind: "add_recovery", targetId: id, severity: "high" });
   for (const id of backupWeak)
     actions.push({ id: `save_backup_codes-${id}`, kind: "save_backup_codes", targetId: id, severity: "medium" });
-  if (hub && hubFan > 2)
-    actions.push({ id: `reduce_google_dependency-${hub.id}`, kind: "reduce_google_dependency", targetId: hub.id, severity: "medium" });
+  if (hub && hubFan > 3)
+    actions.push({ id: `reduce_google_dependency-${hub.id}`, kind: "reduce_google_dependency", targetId: hub.id, severity: "low" });
   for (const id of deviceWeak)
     actions.push({ id: `set_device_lock-${id}`, kind: "set_device_lock", targetId: id, severity: "medium" });
   for (const id of unknownWeak)
@@ -249,7 +253,7 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
       for (const a of accounts) {
         const app = appById(a.authenticatorAppId);
         const authOnPhone = Boolean(app?.deviceId && phoneDeviceIds.has(app.deviceId));
-        const smsOnPhone = a.twoFactor === "sms";
+        const smsOnPhone = a.mfaMethods.includes("sms");
         const phoneRecovery = a.recoveryOptions.some((r) => r.type === "phone");
         if (!authOnPhone && !smsOnPhone && !phoneRecovery && !usesDeviceKind(a, ["phone"])) continue;
 

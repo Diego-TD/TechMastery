@@ -31,6 +31,7 @@ import {
   RECOVERY_TYPES,
   TWO_FACTORS,
 } from "@/features/shared/options";
+import { ChipChoice } from "@/features/shared/ChipChoice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,9 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const NONE = "__none__";
 let rid = 0;
@@ -72,8 +73,19 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
   const [loginMethods, setLoginMethods] = useState<LoginMethod[]>(initial?.loginMethods ?? ["password"]);
   const [socialLoginAccountId, setSocialLoginAccountId] = useState(initial?.socialLoginAccountId ?? NONE);
 
-  const [twoFactor, setTwoFactor] = useState<TwoFactorStatus>(initial?.twoFactor ?? "unknown");
+  const [mfaMethods, setMfaMethods] = useState<TwoFactorStatus[]>(initial?.mfaMethods ?? ["unknown"]);
   const [authenticatorAppId, setAuthenticatorAppId] = useState(initial?.authenticatorAppId ?? NONE);
+
+  // MFA: "none" and "unknown" are exclusive; real methods can combine.
+  const toggleMfa = (m: TwoFactorStatus) => {
+    setMfaMethods((prev) => {
+      if (m === "none" || m === "unknown") return [m];
+      const real = prev.filter((x) => x !== "none" && x !== "unknown");
+      const next = real.includes(m) ? real.filter((x) => x !== m) : [...real, m];
+      return next.length === 0 ? ["unknown"] : next;
+    });
+  };
+  const usesAuthApp = mfaMethods.includes("authenticator_app");
   const [newAppName, setNewAppName] = useState("");
 
   const [recoveryOptions, setRecoveryOptions] = useState<RecoveryOption[]>(initial?.recoveryOptions ?? []);
@@ -112,9 +124,8 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
       identifier: identifier.trim() || undefined,
       loginMethods,
       socialLoginAccountId: usesSocial && socialLoginAccountId !== NONE ? socialLoginAccountId : undefined,
-      twoFactor,
-      authenticatorAppId:
-        twoFactor === "authenticator_app" && authenticatorAppId !== NONE ? authenticatorAppId : undefined,
+      mfaMethods,
+      authenticatorAppId: usesAuthApp && authenticatorAppId !== NONE ? authenticatorAppId : undefined,
       recoveryOptions: recoveryOptions.map((r) => ({
         ...r,
         targetAccountId: r.type === "email" ? r.targetAccountId : undefined,
@@ -139,7 +150,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
       }}
     >
       {/* Basics */}
-      <Section icon={Tag} title={t(($) => $.accountForm.sectionBasics)}>
+      <Section icon={Tag} title={t(($) => $.accountForm.sectionBasics)} divider={false}>
         <div className="flex flex-col gap-1.5">
           <Label>
             {t(($) => $.accountForm.name)} <Req />
@@ -172,7 +183,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
           )}
           <div className="flex flex-col gap-1.5">
             <Label>{t(($) => $.accountForm.importance)}</Label>
-            <SingleChoice
+            <ChipChoice
               value={importance}
               onChange={(v) => setImportance(v as Importance)}
               options={IMPORTANCES.map((i) => ({ value: i, label: t(($) => $.account.importance[i]) }))}
@@ -183,7 +194,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
 
       {/* Identifier — what you log in as */}
       <Section icon={UserRound} title={t(($) => $.accountForm.sectionIdentifier)} hint={t(($) => $.accountForm.identifierHint)}>
-        <SingleChoice
+        <ChipChoice
           value={identifierType}
           onChange={(v) => setIdentifierType(v as IdentifierType)}
           options={IDENTIFIER_TYPES.map((i) => ({ value: i, label: t(($) => $.account.identifierTypes[i]) }))}
@@ -199,9 +210,16 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
 
       {/* Login — how you prove it's you */}
       <Section icon={LogIn} title={t(($) => $.accountForm.sectionLogin)} optional>
-        <MultiChoice
+        <ChipChoice
+          multiple
           value={loginMethods}
-          onChange={(v) => setLoginMethods(v as LoginMethod[])}
+          onToggle={(v) =>
+            setLoginMethods((prev) =>
+              prev.includes(v as LoginMethod)
+                ? prev.filter((x) => x !== v)
+                : [...prev, v as LoginMethod],
+            )
+          }
           options={LOGIN_METHODS.map((m) => ({ value: m, label: t(($) => $.account.loginMethods[m]) }))}
         />
         {usesSocial && (
@@ -224,14 +242,15 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
         )}
       </Section>
 
-      {/* 2FA */}
-      <Section icon={ShieldCheck} title={t(($) => $.accountForm.sectionTwoFactor)} optional>
-        <SingleChoice
-          value={twoFactor}
-          onChange={(v) => setTwoFactor(v as TwoFactorStatus)}
+      {/* MFA — can combine methods */}
+      <Section icon={ShieldCheck} title={t(($) => $.accountForm.sectionMfa)} hint={t(($) => $.accountForm.mfaHint)} optional>
+        <ChipChoice
+          multiple
+          value={mfaMethods}
+          onToggle={(v) => toggleMfa(v as TwoFactorStatus)}
           options={TWO_FACTORS.map((f) => ({ value: f, label: t(($) => $.account.twoFactor[f]) }))}
         />
-        {twoFactor === "authenticator_app" && (
+        {usesAuthApp && (
           <div className="flex flex-col gap-2">
             <Select value={authenticatorAppId} onValueChange={setAuthenticatorAppId}>
               <SelectTrigger>
@@ -404,17 +423,20 @@ function Section({
   title,
   hint,
   optional,
+  divider = true,
   children,
 }: {
   icon: LucideIcon;
   title: string;
   hint?: string;
   optional?: boolean;
+  divider?: boolean;
   children: React.ReactNode;
 }) {
   const { t } = useTranslation();
   return (
     <section className="flex flex-col gap-2.5">
+      {divider && <Separator className="mb-1.5" />}
       <div className="flex items-center gap-2">
         <Icon className="size-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold">{title}</h3>
@@ -435,56 +457,3 @@ function Req() {
   return <span className="text-destructive">*</span>;
 }
 
-type Opt = { value: string; label: string };
-
-function SingleChoice({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: Opt[];
-}) {
-  return (
-    <ToggleGroup
-      type="single"
-      variant="outline"
-      value={value}
-      onValueChange={(v) => v && onChange(v)}
-      className="w-full flex-wrap"
-    >
-      {options.map((o) => (
-        <ToggleGroupItem key={o.value} value={o.value} className="flex-1 text-xs">
-          {o.label}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
-  );
-}
-
-function MultiChoice({
-  value,
-  onChange,
-  options,
-}: {
-  value: string[];
-  onChange: (v: string[]) => void;
-  options: Opt[];
-}) {
-  return (
-    <ToggleGroup
-      type="multiple"
-      variant="outline"
-      value={value}
-      onValueChange={onChange}
-      className="w-full flex-wrap"
-    >
-      {options.map((o) => (
-        <ToggleGroupItem key={o.value} value={o.value} className="flex-1 text-xs">
-          {o.label}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
-  );
-}

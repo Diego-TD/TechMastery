@@ -36,6 +36,7 @@ type MockStore = {
   addAccount: (input: NewAccountInput) => string;
   updateAccount: (id: string, patch: Partial<Account>) => void;
   addDevice: (input: Omit<Device, "id">) => string;
+  updateDevice: (id: string, patch: Partial<Device>) => void;
   addAuthenticatorApp: (input: Omit<AuthenticatorApp, "id">) => string;
   reset: () => void;
 };
@@ -67,6 +68,13 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return id;
   }, []);
 
+  const updateDevice = useCallback((id: string, patch: Partial<Device>) => {
+    setData((prev) => ({
+      ...prev,
+      devices: prev.devices.map((d) => (d.id === id ? { ...d, ...patch } : d)),
+    }));
+  }, []);
+
   const addAuthenticatorApp = useCallback((input: Omit<AuthenticatorApp, "id">) => {
     const id = newId("auth");
     setData((prev) => ({
@@ -79,8 +87,8 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
   const reset = useCallback(() => setData(makeSeedData()), []);
 
   const value = useMemo<MockStore>(
-    () => ({ data, addAccount, updateAccount, addDevice, addAuthenticatorApp, reset }),
-    [data, addAccount, updateAccount, addDevice, addAuthenticatorApp, reset],
+    () => ({ data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp, reset }),
+    [data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp, reset],
   );
 
   return <MockDataContext.Provider value={value}>{children}</MockDataContext.Provider>;
@@ -95,7 +103,7 @@ function useStore(): MockStore {
 // --- Read/write hooks consumed by screens -------------------------------------
 
 export function useInventory() {
-  const { data, addAccount, updateAccount, addDevice, addAuthenticatorApp } = useStore();
+  const { data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp } = useStore();
   return {
     accounts: data.accounts,
     devices: data.devices,
@@ -103,8 +111,14 @@ export function useInventory() {
     addAccount,
     updateAccount,
     addDevice,
+    updateDevice,
     addAuthenticatorApp,
   };
+}
+
+export function useDeviceById(id: string | undefined) {
+  const { data } = useStore();
+  return id ? data.devices.find((d) => d.id === id) : undefined;
 }
 
 export function useAccount(id: string | undefined): Account | undefined {

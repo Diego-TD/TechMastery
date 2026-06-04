@@ -28,6 +28,12 @@
     "yes": "Yes",
     "no": "No"
   },
+  "toasts": {
+    "accountAdded": "Account added",
+    "accountUpdated": "Account updated",
+    "deviceAdded": "Device added",
+    "deviceUpdated": "Device updated"
+  },
   "onboarding": {
     "title": "Let's get you set up",
     "subtitle": "A few quick steps to personalize your experience.",
@@ -149,7 +155,9 @@
     "allAreas": "All areas",
     "filterByArea": "Life area",
     "fitView": "Fit to view",
+    "views": { "tree": "Tree", "web": "Web" },
     "hint": "Pinch to zoom, drag to pan. Tap a node for details.",
+    "webHint": "Drag nodes to rearrange. Tap an account for details.",
     "legendTitle": "Legend",
     "legend": {
       "account": "Account",
@@ -177,6 +185,7 @@
     "recoversVia": "Recovery",
     "signsInWith": "Signs in with",
     "keyFile": "Key file",
+    "onThisDevice": "Accounts on this device",
     "noDevice": "No device linked",
     "noRecovery": "No recovery path",
     "dependedOnBy": "{{count}} accounts depend on this",
@@ -196,6 +205,8 @@
     "identifierPlaceholder": "e.g. d•••@gmail.com (optional)",
     "sectionLogin": "Login method",
     "sectionTwoFactor": "Two-factor (2FA)",
+    "sectionMfa": "Multi-factor (MFA)",
+    "mfaHint": "Pick all that apply. “None” and “Not sure” stand alone.",
     "sectionRecovery": "Recovery options",
     "recoveryEmpty": "No recovery path yet — add one if you know it.",
     "addRecovery": "Add recovery",
@@ -230,6 +241,7 @@
   },
   "deviceForm": {
     "addTitle": "Add a device",
+    "editTitle": "Edit device",
     "name": "Device name",
     "namePlaceholder": "e.g. iPhone 13, MacBook Air",
     "kind": "Type",
@@ -261,6 +273,7 @@
       "unresolved_unknowns": { "title": "Open questions", "desc": "Fewer \"not sure\" answers across your accounts." }
     },
     "weakItems": "Needs attention",
+    "allCovered": "All covered — nice work.",
     "actionsTitle": "Recommended next actions",
     "noActions": "No actions right now — your map looks healthy."
   },
@@ -269,7 +282,7 @@
     "enable_2fa": { "title": "Turn on 2FA for {{name}}", "why": "A second factor stops most account takeovers, even if a password leaks." },
     "add_recovery": { "title": "Set a recovery path for {{name}}", "why": "Without one, a lost password can mean losing the account for good." },
     "save_backup_codes": { "title": "Save backup codes for {{name}}", "why": "If you lose your phone, backup codes are often the only way back in." },
-    "reduce_google_dependency": { "title": "Reduce how much depends on {{name}}", "why": "Many accounts recover or sign in through this one — if it's lost, a lot breaks at once." },
+    "reduce_google_dependency": { "title": "Consider a second path beyond {{name}}", "why": "A lot recovers or signs in through this one account. A backup path means one failure won't lock you out of everything — only worth it if it's easy for you." },
     "set_device_lock": { "title": "Add a screen lock to {{name}}", "why": "A lock keeps your accounts safe if the device is lost or stolen." },
     "resolve_unknown": { "title": "Fill in the unknowns for {{name}}", "why": "Knowing how you log in and recover is the first step to protecting it." }
   },

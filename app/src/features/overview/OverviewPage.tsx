@@ -16,6 +16,7 @@ import {
 import { useInventory, useReadiness } from "@/lib/mock/store";
 import { readinessLevel, scoreColor } from "@/features/shared/display";
 import { AddAccountPanel } from "@/features/inventory/AddAccountPanel";
+import { TargetDetail } from "@/features/inventory/TargetDetail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -42,6 +43,7 @@ export function OverviewPage() {
   const { accounts, devices } = useInventory();
   const readiness = useReadiness();
   const [adding, setAdding] = useState(false);
+  const [targetId, setTargetId] = useState<string | undefined>();
 
   if (accounts.length === 0) {
     return (
@@ -138,7 +140,14 @@ export function OverviewPage() {
               devices.find((d) => d.id === a.targetId)?.name ??
               "";
             return (
-              <Card key={a.id} className="gap-0 p-3">
+              <Card
+                key={a.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setTargetId(a.targetId)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setTargetId(a.targetId)}
+                className="cursor-pointer gap-0 p-3 transition-colors hover:bg-muted/50"
+              >
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex size-8 shrink-0 items-center justify-center rounded-full ${
@@ -176,6 +185,8 @@ export function OverviewPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <TargetDetail targetId={targetId} onClose={() => setTargetId(undefined)} />
     </div>
   );
 }
