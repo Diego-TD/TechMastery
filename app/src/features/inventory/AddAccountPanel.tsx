@@ -1,0 +1,40 @@
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import type { LifeArea } from "@shared/enums";
+import { useInventory } from "@/lib/inventory/store";
+import { ResponsivePanel } from "@/features/shared/ResponsivePanel";
+import { AccountForm } from "./AccountForm";
+
+type Props = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  lockedLifeArea?: LifeArea;
+  onAdded?: (id: string) => void;
+};
+
+export function AddAccountPanel({ open, onOpenChange, lockedLifeArea, onAdded }: Props) {
+  const { t } = useTranslation();
+  const { accounts, devices, addAccount } = useInventory();
+
+  return (
+    <ResponsivePanel
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t(($) => $.accountForm.addTitle)}
+      description={t(($) => $.accountForm.subtitle)}
+    >
+      <AccountForm
+        accounts={accounts}
+        devices={devices}
+        lockedLifeArea={lockedLifeArea}
+        onSubmit={async (input) => {
+          const id = await addAccount(input);
+          onOpenChange(false);
+          toast.success(t(($) => $.toasts.accountAdded));
+          onAdded?.(id);
+        }}
+        onCancel={() => onOpenChange(false)}
+      />
+    </ResponsivePanel>
+  );
+}

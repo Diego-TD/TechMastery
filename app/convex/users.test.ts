@@ -89,3 +89,22 @@ describe("users.me", () => {
     expect(user._id).toBe(userId);
   });
 });
+
+describe("users.completeOnboarding", () => {
+  test("marks the current user onboarded and saves their selected goal", async () => {
+    const t = createTestBackend();
+    const asUser = t.withIdentity(identity);
+
+    await asUser.mutation(api.users.ensureUser, {});
+    await asUser.mutation(api.users.completeOnboarding, {
+      goal: "prepare_device_loss",
+    });
+
+    const user = await asUser.query(api.users.me, {});
+
+    expect(user).toMatchObject({
+      status: "ONBOARDED",
+      onboardingGoal: "prepare_device_loss",
+    });
+  });
+});

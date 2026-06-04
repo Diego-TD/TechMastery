@@ -26,8 +26,9 @@
     /* Import paths */
     "paths": {
       "@/*": ["./src/*"],
+      "@shared/*": ["./shared/*"],
       "@locales/*": ["./locales/*"]
     }
   },
-  "include": ["src", "types", "locales"]
+  "include": ["src", "types", "locales", "shared"]
 }

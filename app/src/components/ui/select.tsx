@@ -6,10 +6,61 @@ import { Select as SelectPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
-function Select({
-  ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />;
+const SELECT_OPEN_ATTR = "data-tm-select-open";
+let openSelectCount = 0;
+let clearSelectOpenTimer: ReturnType<typeof window.setTimeout> | undefined;
+
+function markSelectOpen(open: boolean) {
+  if (typeof document === "undefined") return;
+
+  if (clearSelectOpenTimer) {
+    window.clearTimeout(clearSelectOpenTimer);
+    clearSelectOpenTimer = undefined;
+  }
+
+  openSelectCount = open ? openSelectCount + 1 : Math.max(0, openSelectCount - 1);
+  if (openSelectCount > 0) {
+    document.body.setAttribute(SELECT_OPEN_ATTR, "true");
+    return;
+  }
+
+  clearSelectOpenTimer = window.setTimeout(() => {
+    if (openSelectCount === 0) document.body.removeAttribute(SELECT_OPEN_ATTR);
+  }, 150);
+}
+
+function Select(props: React.ComponentProps<typeof SelectPrimitive.Root>) {
+  const { open, defaultOpen } = props;
+  const openRef = React.useRef(Boolean(open ?? defaultOpen));
+
+  React.useEffect(() => {
+    if (open === undefined || openRef.current === open) return;
+    markSelectOpen(open);
+    openRef.current = open;
+  }, [open]);
+
+  React.useEffect(
+    () => () => {
+      if (openRef.current) markSelectOpen(false);
+    },
+    [],
+  );
+
+  return (
+    <SelectPrimitive.Root
+      {...props}
+      data-slot="select"
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={(nextOpen) => {
+        if (openRef.current !== nextOpen) {
+          markSelectOpen(nextOpen);
+          openRef.current = nextOpen;
+        }
+        props.onOpenChange?.(nextOpen);
+      }}
+    />
+  );
 }
 
 function SelectGroup({
