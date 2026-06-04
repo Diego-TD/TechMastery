@@ -368,6 +368,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  max-width: 100%;
   margin: 0 0 1.2rem;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -376,6 +377,7 @@ p {
   color: var(--muted-foreground);
   font-size: 0.78rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .eyebrow::before {
@@ -389,9 +391,13 @@ p {
 
 .hero h1 {
   margin: 0;
-  max-width: 16ch;
+  max-width: 17ch;
   font-size: clamp(2.6rem, 6vw, 4.4rem);
   line-height: 1.02;
+}
+
+.hero h1 .title-nowrap {
+  white-space: nowrap;
 }
 
 .hero h1 .accent {
@@ -410,6 +416,7 @@ p {
   margin: 1.5rem 0 0;
   color: var(--muted-foreground);
   font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.62;
   text-wrap: balance;
 }
 
@@ -1306,7 +1313,9 @@ html.dark .shot-light {
   }
 
   .lead {
-    font-size: 1.02rem;
+    margin-top: 1.35rem;
+    font-size: 0.96rem;
+    line-height: 1.72;
   }
 
   .principle-grid,

@@ -125,10 +125,10 @@ export const landingContent: Record<Lang, LandingContent> = {
       github: "View source on GitHub",
     },
     hero: {
-      eyebrow: "Digital citizenship, made practical",
-      title: "Know what holds your",
-      titleAccent: "digital life together.",
-      lead: "Your accounts, devices, and recovery paths are quietly tangled together. TechMastery helps you map them, spot the weak points, and take one calm next step — no passwords, no shame.",
+      eyebrow: "For everyday digital life",
+      title: "Digital safety,",
+      titleAccent: "made understandable.",
+      lead: "TechMastery maps your accounts, devices, and recovery paths so you can see what depends on what, spot weak points, and take one practical next step — without storing passwords.",
       primaryCta: "Map your first account",
       secondaryCta: "See how it works",
       trust: [
@@ -312,10 +312,10 @@ export const landingContent: Record<Lang, LandingContent> = {
       github: "Ver código en GitHub",
     },
     hero: {
-      eyebrow: "Ciudadanía digital, hecha práctica",
-      title: "Descubre lo que sostiene",
-      titleAccent: "tu vida digital.",
-      lead: "Tus cuentas, dispositivos y rutas de recuperación están entrelazados sin que lo notes. TechMastery te ayuda a mapearlos, ver dónde estás más expuesto y dar un siguiente paso con calma — sin contraseñas y a tu propio ritmo.",
+      eyebrow: "Para tu vida digital diaria",
+      title: "Seguridad digital,",
+      titleAccent: "fácil de entender.",
+      lead: "TechMastery mapea tus cuentas, dispositivos y rutas de recuperación para ver qué depende de qué, detectar puntos débiles y dar un siguiente paso práctico — sin guardar contraseñas.",
       primaryCta: "Mapea tu primera cuenta",
       secondaryCta: "Ver cómo funciona",
       trust: [
