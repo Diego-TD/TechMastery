@@ -17,6 +17,7 @@ import type {
   AuthenticatorApp,
   Device,
   MapData,
+  PhoneNumber,
   Readiness,
   SimulationKind,
   SimulationResult,
@@ -38,6 +39,11 @@ type MockStore = {
   addDevice: (input: Omit<Device, "id">) => string;
   updateDevice: (id: string, patch: Partial<Device>) => void;
   addAuthenticatorApp: (input: Omit<AuthenticatorApp, "id">) => string;
+  updateAuthenticatorApp: (id: string, patch: Partial<AuthenticatorApp>) => void;
+  deleteAuthenticatorApp: (id: string) => void;
+  addPhoneNumber: (input: Omit<PhoneNumber, "id">) => string;
+  updatePhoneNumber: (id: string, patch: Partial<PhoneNumber>) => void;
+  deletePhoneNumber: (id: string) => void;
   reset: () => void;
 };
 
@@ -84,11 +90,68 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return id;
   }, []);
 
+  const updateAuthenticatorApp = useCallback((id: string, patch: Partial<AuthenticatorApp>) => {
+    setData((prev) => ({
+      ...prev,
+      authenticatorApps: prev.authenticatorApps.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+    }));
+  }, []);
+
+  const deleteAuthenticatorApp = useCallback((id: string) => {
+    setData((prev) => ({
+      ...prev,
+      authenticatorApps: prev.authenticatorApps.filter((a) => a.id !== id),
+    }));
+  }, []);
+
+  const addPhoneNumber = useCallback((input: Omit<PhoneNumber, "id">) => {
+    const id = newId("ph");
+    setData((prev) => ({ ...prev, phoneNumbers: [...prev.phoneNumbers, { ...input, id }] }));
+    return id;
+  }, []);
+
+  const updatePhoneNumber = useCallback((id: string, patch: Partial<PhoneNumber>) => {
+    setData((prev) => ({
+      ...prev,
+      phoneNumbers: prev.phoneNumbers.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    }));
+  }, []);
+
+  const deletePhoneNumber = useCallback((id: string) => {
+    setData((prev) => ({ ...prev, phoneNumbers: prev.phoneNumbers.filter((p) => p.id !== id) }));
+  }, []);
+
   const reset = useCallback(() => setData(makeSeedData()), []);
 
   const value = useMemo<MockStore>(
-    () => ({ data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp, reset }),
-    [data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp, reset],
+    () => ({
+      data,
+      addAccount,
+      updateAccount,
+      addDevice,
+      updateDevice,
+      addAuthenticatorApp,
+      updateAuthenticatorApp,
+      deleteAuthenticatorApp,
+      addPhoneNumber,
+      updatePhoneNumber,
+      deletePhoneNumber,
+      reset,
+    }),
+    [
+      data,
+      addAccount,
+      updateAccount,
+      addDevice,
+      updateDevice,
+      addAuthenticatorApp,
+      updateAuthenticatorApp,
+      deleteAuthenticatorApp,
+      addPhoneNumber,
+      updatePhoneNumber,
+      deletePhoneNumber,
+      reset,
+    ],
   );
 
   return <MockDataContext.Provider value={value}>{children}</MockDataContext.Provider>;
@@ -103,16 +166,23 @@ function useStore(): MockStore {
 // --- Read/write hooks consumed by screens -------------------------------------
 
 export function useInventory() {
-  const { data, addAccount, updateAccount, addDevice, updateDevice, addAuthenticatorApp } = useStore();
+  const store = useStore();
+  const { data } = store;
   return {
     accounts: data.accounts,
     devices: data.devices,
     authenticatorApps: data.authenticatorApps,
-    addAccount,
-    updateAccount,
-    addDevice,
-    updateDevice,
-    addAuthenticatorApp,
+    phoneNumbers: data.phoneNumbers,
+    addAccount: store.addAccount,
+    updateAccount: store.updateAccount,
+    addDevice: store.addDevice,
+    updateDevice: store.updateDevice,
+    addAuthenticatorApp: store.addAuthenticatorApp,
+    updateAuthenticatorApp: store.updateAuthenticatorApp,
+    deleteAuthenticatorApp: store.deleteAuthenticatorApp,
+    addPhoneNumber: store.addPhoneNumber,
+    updatePhoneNumber: store.updatePhoneNumber,
+    deletePhoneNumber: store.deletePhoneNumber,
   };
 }
 

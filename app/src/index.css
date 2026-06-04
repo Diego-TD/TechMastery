@@ -130,22 +130,24 @@
   }
 }
 
-/* React Flow zoom/fit controls — theme-aware (xyflow's defaults are light-only). */
-.react-flow__controls,
-.xy-flow__controls {
+/*
+ * React Flow zoom/fit controls — theme-aware. xyflow's stylesheet is imported
+ * from the MapPage module (after this file), so it wins on source order at equal
+ * specificity. The `.react-flow` ancestor raises specificity so these win in
+ * both light and dark regardless of load order.
+ */
+.react-flow .react-flow__controls {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
-.react-flow__controls-button,
-.xy-flow__controls-button {
-  background: var(--card);
+.react-flow .react-flow__controls-button {
+  background-color: var(--card);
   border-bottom: 1px solid var(--border);
   color: var(--foreground);
 }
-.react-flow__controls-button:hover,
-.xy-flow__controls-button:hover {
-  background: var(--muted);
+.react-flow .react-flow__controls-button:hover {
+  background-color: var(--muted);
 }
-.react-flow__controls-button svg,
-.xy-flow__controls-button svg {
-  fill: currentColor;
+.react-flow .react-flow__controls-button svg,
+.react-flow .react-flow__controls-button svg path {
+  fill: var(--foreground);
 }

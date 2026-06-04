@@ -136,7 +136,11 @@ export function MapPage() {
 
   const { nodes, edges } = useMemo(() => {
     const rfNodes = graph.nodes.map((n) => toRFNode(n, t));
-    const rfEdges = graph.edges.map(toRFEdge);
+    // Web (Obsidian-like) uses straight diagonal links; Tree uses orthogonal.
+    const rfEdges = graph.edges.map((e) => ({
+      ...toRFEdge(e),
+      type: view === "web" ? "straight" : "smoothstep",
+    }));
     const laidOut =
       view === "web"
         ? forceLayout(rfNodes, rfEdges)

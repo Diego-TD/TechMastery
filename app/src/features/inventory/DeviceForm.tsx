@@ -19,12 +19,22 @@ export function DeviceForm({ initial, onSubmit, onCancel }: Props) {
   const { t } = useTranslation();
   const [name, setName] = useState(initial?.name ?? "");
   const [kind, setKind] = useState<DeviceKind>(initial?.kind ?? "phone");
-  const [lock, setLock] = useState<DeviceLock>(initial?.lock ?? "biometric");
+  const [lockMethods, setLockMethods] = useState<DeviceLock[]>(initial?.lockMethods ?? ["unknown"]);
   const [findMyEnabled, setFindMy] = useState(initial?.findMyEnabled ?? true);
+
+  // "None" and "Not sure" are exclusive; real locks can combine.
+  const toggleLock = (m: DeviceLock) => {
+    setLockMethods((prev) => {
+      if (m === "none" || m === "unknown") return [m];
+      const real = prev.filter((x) => x !== "none" && x !== "unknown");
+      const next = real.includes(m) ? real.filter((x) => x !== m) : [...real, m];
+      return next.length === 0 ? ["unknown"] : next;
+    });
+  };
 
   const submit = () => {
     if (!name.trim()) return;
-    onSubmit({ name: name.trim(), kind, lock, findMyEnabled, notes: initial?.notes });
+    onSubmit({ name: name.trim(), kind, lockMethods, findMyEnabled, notes: initial?.notes });
   };
 
   return (
@@ -60,8 +70,9 @@ export function DeviceForm({ initial, onSubmit, onCancel }: Props) {
       <div className="flex flex-col gap-1.5">
         <Label>{t(($) => $.deviceForm.lock)}</Label>
         <ChipChoice
-          value={lock}
-          onChange={(v) => setLock(v as DeviceLock)}
+          multiple
+          value={lockMethods}
+          onToggle={(v) => toggleLock(v as DeviceLock)}
           options={DEVICE_LOCKS.map((l) => ({ value: l, label: t(($) => $.deviceLock[l]) }))}
         />
       </div>

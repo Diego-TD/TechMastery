@@ -62,6 +62,7 @@ export type LoginMethod = Infer<typeof loginMethod>;
 export const twoFactorStatus = v.union(
   v.literal("none"),
   v.literal("sms"),
+  v.literal("email"),
   v.literal("authenticator_app"),
   v.literal("security_key"),
   v.literal("unknown"),

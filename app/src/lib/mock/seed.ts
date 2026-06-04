@@ -11,13 +11,19 @@ import type { Account, AuthenticatorApp, Device, MapData } from "./types";
 const PHONE = "+52 ••• ••• 4821";
 
 const devices: Device[] = [
-  { id: "dev_iphone", name: "iPhone 13", kind: "phone", lock: "biometric", findMyEnabled: true },
-  { id: "dev_macbook", name: "MacBook Air", kind: "laptop", lock: "password", findMyEnabled: true },
+  { id: "dev_iphone", name: "iPhone 13", kind: "phone", lockMethods: ["face"], findMyEnabled: true },
+  {
+    id: "dev_macbook",
+    name: "MacBook Air",
+    kind: "laptop",
+    lockMethods: ["fingerprint", "password"],
+    findMyEnabled: true,
+  },
   {
     id: "dev_ipad",
     name: "iPad (old)",
     kind: "tablet",
-    lock: "none",
+    lockMethods: ["none"],
     findMyEnabled: false,
     notes: "Mostly for Netflix on the couch.",
   },
@@ -28,6 +34,8 @@ const authenticatorApps: AuthenticatorApp[] = [
   { id: "auth_ms", name: "Microsoft Authenticator", deviceId: "dev_iphone" },
 ];
 
+const phoneNumbers = [{ id: "ph_main", label: PHONE }];
+
 const accounts: Account[] = [
   {
     id: "acc_gmail",
@@ -36,11 +44,10 @@ const accounts: Account[] = [
     lifeArea: "email",
     importance: "high",
     identifierType: "email",
-    identifier: "d•••@gmail.com",
     loginMethods: ["password", "passkey"],
     mfaMethods: ["authenticator_app"],
     authenticatorAppId: "auth_google",
-    recoveryOptions: [{ id: "r1", type: "phone", value: PHONE }],
+    recoveryOptions: [{ id: "r1", type: "phone", phoneId: "ph_main" }],
     deviceIds: ["dev_iphone", "dev_macbook"],
     hasBackupCodes: true,
     backupCodesLocation: "Printed, in a drawer at home",
@@ -69,7 +76,7 @@ const accounts: Account[] = [
     identifierType: "email",
     loginMethods: ["password"],
     mfaMethods: ["sms"],
-    recoveryOptions: [{ id: "r1", type: "phone", value: PHONE }],
+    recoveryOptions: [{ id: "r1", type: "phone", phoneId: "ph_main" }],
     deviceIds: ["dev_iphone", "dev_macbook", "dev_ipad"],
     hasBackupCodes: false,
     notes: "Photos, backups, Find My.",
@@ -85,7 +92,7 @@ const accounts: Account[] = [
     mfaMethods: ["sms"],
     recoveryOptions: [
       { id: "r1", type: "customer_support" },
-      { id: "r2", type: "phone", value: PHONE },
+      { id: "r2", type: "phone", phoneId: "ph_main" },
     ],
     deviceIds: ["dev_iphone"],
     hasBackupCodes: false,
@@ -113,6 +120,7 @@ const accounts: Account[] = [
     lifeArea: "social",
     importance: "medium",
     identifierType: "email",
+    identifierAccountId: "acc_gmail",
     loginMethods: ["social"],
     socialLoginAccountId: "acc_gmail",
     mfaMethods: ["none"],
@@ -126,6 +134,7 @@ const accounts: Account[] = [
     lifeArea: "shopping",
     importance: "low",
     identifierType: "email",
+    identifierAccountId: "acc_gmail",
     loginMethods: ["social"],
     socialLoginAccountId: "acc_gmail",
     mfaMethods: ["none"],
@@ -188,7 +197,8 @@ export function makeSeedData(): MapData {
       recoveryOptions: a.recoveryOptions.map((r) => ({ ...r })),
       deviceIds: [...a.deviceIds],
     })),
-    devices: devices.map((d) => ({ ...d })),
+    devices: devices.map((d) => ({ ...d, lockMethods: [...d.lockMethods] })),
     authenticatorApps: authenticatorApps.map((a) => ({ ...a })),
+    phoneNumbers: phoneNumbers.map((p) => ({ ...p })),
   };
 }

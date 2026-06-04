@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Link2, Plus, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Link2, Phone, Plus, ShieldCheck } from "lucide-react";
 import { LIFE_AREAS } from "@shared/enums";
 import { useInventory, useReadiness } from "@/lib/mock/store";
 import { dependencyFanIn } from "@/lib/mock/derive";
+import { EntityDetailPanel, type EntityRef } from "./EntityDetailPanel";
 import type { Account, Device } from "@/lib/mock/types";
 import {
   DEVICE_ICON,
@@ -39,7 +40,7 @@ type TypeTab = "all" | "accounts" | "devices";
 
 export function InventoryPage() {
   const { t } = useTranslation();
-  const { accounts, devices } = useInventory();
+  const { accounts, devices, authenticatorApps, phoneNumbers } = useInventory();
   const readiness = useReadiness();
   const riskyIds = useMemo(
     () => new Set(readiness.actions.map((a) => a.targetId)),
@@ -53,6 +54,7 @@ export function InventoryPage() {
   const [adding, setAdding] = useState(false);
   const [detailId, setDetailId] = useState<string | undefined>();
   const [detailDeviceId, setDetailDeviceId] = useState<string | undefined>();
+  const [entityRef, setEntityRef] = useState<EntityRef | undefined>();
 
   const filteredAccounts = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -148,6 +150,34 @@ export function InventoryPage() {
             filteredDevices.map((d) => (
               <DeviceCard key={d.id} device={d} onClick={() => setDetailDeviceId(d.id)} />
             ))}
+
+          {/* Phone numbers + authenticator apps are linkable entities too. */}
+          {tab === "all" && area === ALL && authenticatorApps.length > 0 && (
+            <>
+              <GroupLabel>{t(($) => $.inventory.authAppsTitle)}</GroupLabel>
+              {authenticatorApps.map((app) => (
+                <EntityCard
+                  key={app.id}
+                  icon={ShieldCheck}
+                  name={app.name}
+                  onClick={() => setEntityRef({ kind: "authApp", id: app.id })}
+                />
+              ))}
+            </>
+          )}
+          {tab === "all" && area === ALL && phoneNumbers.length > 0 && (
+            <>
+              <GroupLabel>{t(($) => $.inventory.phonesTitle)}</GroupLabel>
+              {phoneNumbers.map((p) => (
+                <EntityCard
+                  key={p.id}
+                  icon={Phone}
+                  name={p.label}
+                  onClick={() => setEntityRef({ kind: "phone", id: p.id })}
+                />
+              ))}
+            </>
+          )}
         </div>
       )}
 
@@ -161,6 +191,12 @@ export function InventoryPage() {
         deviceId={detailDeviceId}
         open={detailDeviceId !== undefined}
         onOpenChange={(o) => !o && setDetailDeviceId(undefined)}
+      />
+      <EntityDetailPanel
+        key={entityRef?.id}
+        entity={entityRef}
+        open={entityRef !== undefined}
+        onOpenChange={(o) => !o && setEntityRef(undefined)}
       />
     </div>
   );
@@ -220,6 +256,41 @@ function AccountCard({
   );
 }
 
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-2 px-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      {children}
+    </div>
+  );
+}
+
+function EntityCard({
+  icon: Icon,
+  name,
+  onClick,
+}: {
+  icon: typeof ShieldCheck;
+  name: string;
+  onClick: () => void;
+}) {
+  return (
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
+      className="cursor-pointer gap-0 p-3 transition-colors hover:bg-muted/50"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
+          <Icon className="size-4 text-muted-foreground" />
+        </div>
+        <span className="truncate font-medium">{name}</span>
+      </div>
+    </Card>
+  );
+}
+
 function DeviceCard({ device, onClick }: { device: Device; onClick: () => void }) {
   const { t } = useTranslation();
   const Icon = DEVICE_ICON[device.kind];
@@ -238,7 +309,8 @@ function DeviceCard({ device, onClick }: { device: Device; onClick: () => void }
         <div className="min-w-0 flex-1">
           <span className="truncate font-medium">{device.name}</span>
           <p className="truncate text-xs text-muted-foreground">
-            {t(($) => $.deviceKinds[device.kind])} · {t(($) => $.deviceLock[device.lock])}
+            {t(($) => $.deviceKinds[device.kind])} ·{" "}
+            {device.lockMethods.map((l) => t(($) => $.deviceLock[l])).join(", ")}
           </p>
         </div>
       </div>

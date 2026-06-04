@@ -20,7 +20,8 @@ type Props = {
 export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
   const { t } = useTranslation();
   const account = useAccount(accountId);
-  const { accounts, devices, authenticatorApps, updateAccount } = useInventory();
+  const { accounts, devices, authenticatorApps, phoneNumbers, updateAccount } = useInventory();
+  const phoneLabel = (id?: string) => phoneNumbers.find((p) => p.id === id)?.label ?? "";
   const readiness = useReadiness();
   const [editing, setEditing] = useState(false);
   const improvements = readiness.actions.filter((a) => a.targetId === accountId);
@@ -65,7 +66,13 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
           <dl className="flex flex-col gap-3 text-sm">
             <Row label={t(($) => $.accountForm.sectionIdentifier)}>
               {t(($) => $.account.identifierTypes[account.identifierType])}
-              {account.identifier ? ` · ${account.identifier}` : ""}
+              {account.identifierType === "email" && account.identifierAccountId
+                ? ` · ${nameOf(accounts, account.identifierAccountId)}`
+                : account.identifierType === "phone" && account.identifierPhoneId
+                  ? ` · ${phoneLabel(account.identifierPhoneId)}`
+                  : account.identifierType === "username" && account.identifier
+                    ? ` · ${account.identifier}`
+                    : ""}
             </Row>
             <Row label={t(($) => $.accountForm.sectionLogin)}>
               {account.loginMethods.length === 0
@@ -95,8 +102,8 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
                         {t(($) => $.account.recoveryMethods[r.type])}
                         {r.type === "email" && r.targetAccountId
                           ? ` → ${nameOf(accounts, r.targetAccountId)}`
-                          : r.type === "phone" && r.value
-                            ? ` → ${r.value}`
+                          : r.type === "phone" && r.phoneId
+                            ? ` → ${phoneLabel(r.phoneId)}`
                             : ""}
                       </span>
                     ))}

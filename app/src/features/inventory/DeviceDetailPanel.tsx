@@ -56,7 +56,9 @@ export function DeviceDetailPanel({ deviceId, open, onOpenChange }: Props) {
           </div>
 
           <dl className="flex flex-col gap-3 text-sm">
-            <Row label={t(($) => $.deviceForm.lock)}>{t(($) => $.deviceLock[device.lock])}</Row>
+            <Row label={t(($) => $.deviceForm.lock)}>
+              {device.lockMethods.map((l) => t(($) => $.deviceLock[l])).join(", ")}
+            </Row>
             <Row label={t(($) => $.deviceForm.findMy)}>
               {device.findMyEnabled ? t(($) => $.common.yes) : t(($) => $.common.no)}
             </Row>

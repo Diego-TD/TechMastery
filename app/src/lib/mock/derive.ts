@@ -34,12 +34,11 @@ export type GraphEdge = {
 
 export type GraphModel = { nodes: GraphNode[]; edges: GraphEdge[] };
 
-const phoneNodeId = (num: string) => `rec_phone_${num.replace(/\D/g, "")}`;
-
 export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
   const accountsById = new Map(data.accounts.map((a) => [a.id, a]));
   const devicesById = new Map(data.devices.map((d) => [d.id, d]));
   const appsById = new Map(data.authenticatorApps.map((a) => [a.id, a]));
+  const phonesById = new Map(data.phoneNumbers.map((p) => [p.id, p]));
 
   const rootAccounts =
     lifeArea === undefined
@@ -69,10 +68,12 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
       }
     }
   };
-  const ensurePhone = (num: string) => {
-    const id = phoneNodeId(num);
-    if (!nodes.has(id)) nodes.set(id, { id, kind: "recovery", label: num });
-    return id;
+  const ensurePhone = (phoneId: string) => {
+    const phone = phonesById.get(phoneId);
+    if (phone && !nodes.has(phoneId)) {
+      nodes.set(phoneId, { id: phoneId, kind: "recovery", label: phone.label });
+    }
+    return phoneId;
   };
 
   for (const acc of rootAccounts) {
@@ -97,8 +98,8 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
       if (r.type === "email" && r.targetAccountId && r.targetAccountId !== acc.id) {
         ensureAccount(r.targetAccountId);
         pushEdge(acc.id, r.targetAccountId, "recovers");
-      } else if (r.type === "phone" && r.value) {
-        pushEdge(acc.id, ensurePhone(r.value), "recovers");
+      } else if (r.type === "phone" && r.phoneId && phonesById.has(r.phoneId)) {
+        pushEdge(acc.id, ensurePhone(r.phoneId), "recovers");
       }
     }
   }
@@ -111,7 +112,7 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
 // ---------------------------------------------------------------------------
 
 const isUnknown = (v: string) => v === "unknown";
-const REAL_MFA = ["sms", "authenticator_app", "security_key"] as const;
+const REAL_MFA = ["sms", "email", "authenticator_app", "security_key"] as const;
 const hasTwoFactor = (a: Account) => a.mfaMethods.some((m) => (REAL_MFA as readonly string[]).includes(m));
 const mfaUnknown = (a: Account) => a.mfaMethods.length === 0 || a.mfaMethods.includes("unknown");
 /** Accounts whose MFA issues backup codes (app / security key) — only these can "save backup codes". */
@@ -139,6 +140,18 @@ export function dependencyFanIn(accounts: Account[]): Map<string, string[]> {
   return fan;
 }
 
+/** Accounts that rely on an authenticator app (blocks deletion). */
+export function authenticatorAppUsage(accounts: Account[], appId: string): Account[] {
+  return accounts.filter((a) => a.authenticatorAppId === appId);
+}
+
+/** Accounts that rely on a phone number, as identifier or recovery (blocks deletion). */
+export function phoneUsage(accounts: Account[], phoneId: string): Account[] {
+  return accounts.filter(
+    (a) => a.identifierPhoneId === phoneId || a.recoveryOptions.some((r) => r.phoneId === phoneId),
+  );
+}
+
 function topHub(accounts: Account[]): { id: string; dependents: string[] } | null {
   let best: { id: string; dependents: string[] } | null = null;
   for (const [id, dependents] of dependencyFanIn(accounts)) {
@@ -153,9 +166,9 @@ export function computeReadiness(data: MapData): Readiness {
 
   const protectionWeak = important.filter((a) => !hasTwoFactor(a)).map((a) => a.id);
   const recoveryWeak = accounts.filter((a) => !hasRecovery(a)).map((a) => a.id);
-  const deviceWeak = devices
-    .filter((d) => d.lock === "none" || d.lock === "unknown" || !d.findMyEnabled)
-    .map((d) => d.id);
+  const deviceLocked = (d: Device) =>
+    d.lockMethods.some((m) => m !== "none" && m !== "unknown");
+  const deviceWeak = devices.filter((d) => !deviceLocked(d) || !d.findMyEnabled).map((d) => d.id);
   // Only suggest backup codes where they actually exist (app/key MFA).
   const backupCandidates = accounts.filter(backupRelevant);
   const backupWeak = backupCandidates.filter((a) => !a.hasBackupCodes).map((a) => a.id);

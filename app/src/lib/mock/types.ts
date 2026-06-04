@@ -10,14 +10,20 @@ import type {
 /** User-flagged importance — drives which risks the app surfaces first. */
 export type Importance = "high" | "medium" | "low";
 
+/** A masked phone number, mapped once and linked from many places. */
+export type PhoneNumber = {
+  id: string;
+  label: string;
+};
+
 /** A single recovery path. An account can have several. */
 export type RecoveryOption = {
   id: string;
   type: RecoveryMethodType;
   /** For `type: "email"` — the account whose inbox recovers this one. */
   targetAccountId?: string;
-  /** For `type: "phone"` — a masked number. */
-  value?: string;
+  /** For `type: "phone"` — the linked phone number entity. */
+  phoneId?: string;
 };
 
 /**
@@ -33,9 +39,13 @@ export type Account = {
   lifeArea: LifeArea;
   importance: Importance;
 
-  // Identifier — what you log in as.
+  // Identifier — what you log in as. Derived/linked, not retyped:
   identifierType: IdentifierType;
-  /** Optional, masked value (e.g. "d•••@gmail.com"). */
+  /** For `identifierType: "email"` — the email account you log in with (link). */
+  identifierAccountId?: string;
+  /** For `identifierType: "phone"` — the linked phone number. */
+  identifierPhoneId?: string;
+  /** For `identifierType: "username"` — a free-text label (no PII needed). */
   identifier?: string;
 
   // Login — how you prove it's you (can be several).
@@ -70,13 +80,14 @@ export type Account = {
   notes?: string;
 };
 
-export type DeviceLock = "biometric" | "pin" | "password" | "none" | "unknown";
+export type DeviceLock = "face" | "fingerprint" | "pin" | "password" | "none" | "unknown";
 
 export type Device = {
   id: string;
   name: string;
   kind: DeviceKind;
-  lock: DeviceLock;
+  /** Either exactly ["none"], exactly ["unknown"], or any mix of real locks. */
+  lockMethods: DeviceLock[];
   findMyEnabled: boolean;
   notes?: string;
 };
@@ -93,6 +104,7 @@ export type MapData = {
   accounts: Account[];
   devices: Device[];
   authenticatorApps: AuthenticatorApp[];
+  phoneNumbers: PhoneNumber[];
 };
 
 /** A single readiness sub-score the app explains back to the user. */

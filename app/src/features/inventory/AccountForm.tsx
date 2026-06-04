@@ -61,7 +61,7 @@ type Props = {
 
 export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubmit, onCancel }: Props) {
   const { t } = useTranslation();
-  const { authenticatorApps, addAuthenticatorApp } = useInventory();
+  const { authenticatorApps, addAuthenticatorApp, addAccount } = useInventory();
 
   const [name, setName] = useState(initial?.name ?? "");
   const [lifeArea, setLifeArea] = useState<LifeArea>(lockedLifeArea ?? initial?.lifeArea ?? "social");
@@ -69,6 +69,28 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
 
   const [identifierType, setIdentifierType] = useState<IdentifierType>(initial?.identifierType ?? "email");
   const [identifier, setIdentifier] = useState(initial?.identifier ?? "");
+  const [identifierAccountId, setIdentifierAccountId] = useState(initial?.identifierAccountId ?? NONE);
+  const [identifierPhoneId, setIdentifierPhoneId] = useState<string | undefined>(initial?.identifierPhoneId);
+  const [addingEmail, setAddingEmail] = useState(false);
+  const [newEmailName, setNewEmailName] = useState("");
+
+  const createEmailAccount = () => {
+    if (!newEmailName.trim()) return;
+    const id = addAccount({
+      name: newEmailName.trim(),
+      lifeArea: "email",
+      importance: "medium",
+      identifierType: "email",
+      loginMethods: ["password"],
+      mfaMethods: ["unknown"],
+      recoveryOptions: [],
+      deviceIds: [],
+      hasBackupCodes: false,
+    });
+    setIdentifierAccountId(id);
+    setNewEmailName("");
+    setAddingEmail(false);
+  };
 
   const [loginMethods, setLoginMethods] = useState<LoginMethod[]>(initial?.loginMethods ?? ["password"]);
   const [socialLoginAccountId, setSocialLoginAccountId] = useState(initial?.socialLoginAccountId ?? NONE);
@@ -87,6 +109,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
   };
   const usesAuthApp = mfaMethods.includes("authenticator_app");
   const [newAppName, setNewAppName] = useState("");
+  const [addingApp, setAddingApp] = useState(false);
 
   const [recoveryOptions, setRecoveryOptions] = useState<RecoveryOption[]>(initial?.recoveryOptions ?? []);
   const [deviceIds, setDeviceIds] = useState<string[]>(initial?.deviceIds ?? []);
@@ -112,6 +135,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
     const id = addAuthenticatorApp({ name: newAppName.trim() });
     setAuthenticatorAppId(id);
     setNewAppName("");
+    setAddingApp(false);
   };
 
   const submit = () => {
@@ -121,7 +145,10 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
       lifeArea,
       importance,
       identifierType,
-      identifier: identifier.trim() || undefined,
+      identifier: identifierType === "username" ? identifier.trim() || undefined : undefined,
+      identifierAccountId:
+        identifierType === "email" && identifierAccountId !== NONE ? identifierAccountId : undefined,
+      identifierPhoneId: identifierType === "phone" ? identifierPhoneId : undefined,
       loginMethods,
       socialLoginAccountId: usesSocial && socialLoginAccountId !== NONE ? socialLoginAccountId : undefined,
       mfaMethods,
@@ -129,7 +156,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
       recoveryOptions: recoveryOptions.map((r) => ({
         ...r,
         targetAccountId: r.type === "email" ? r.targetAccountId : undefined,
-        value: r.type === "phone" ? r.value : undefined,
+        phoneId: r.type === "phone" ? r.phoneId : undefined,
       })),
       deviceIds,
       hasBackupCodes,
@@ -163,32 +190,30 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
             required
           />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {!lockedLifeArea && (
-            <div className="flex flex-col gap-1.5">
-              <Label>{t(($) => $.accountForm.lifeArea)}</Label>
-              <Select value={lifeArea} onValueChange={(v) => setLifeArea(v as LifeArea)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LIFE_AREAS.map((a) => (
-                    <SelectItem key={a} value={a}>
-                      {t(($) => $.lifeAreas[a])}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+        {!lockedLifeArea && (
           <div className="flex flex-col gap-1.5">
-            <Label>{t(($) => $.accountForm.importance)}</Label>
-            <ChipChoice
-              value={importance}
-              onChange={(v) => setImportance(v as Importance)}
-              options={IMPORTANCES.map((i) => ({ value: i, label: t(($) => $.account.importance[i]) }))}
-            />
+            <Label>{t(($) => $.accountForm.lifeArea)}</Label>
+            <Select value={lifeArea} onValueChange={(v) => setLifeArea(v as LifeArea)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LIFE_AREAS.map((a) => (
+                  <SelectItem key={a} value={a}>
+                    {t(($) => $.lifeAreas[a])}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+        )}
+        <div className="flex flex-col gap-1.5">
+          <Label>{t(($) => $.accountForm.importance)}</Label>
+          <ChipChoice
+            value={importance}
+            onChange={(v) => setImportance(v as Importance)}
+            options={IMPORTANCES.map((i) => ({ value: i, label: t(($) => $.account.importance[i]) }))}
+          />
         </div>
       </Section>
 
@@ -199,7 +224,57 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
           onChange={(v) => setIdentifierType(v as IdentifierType)}
           options={IDENTIFIER_TYPES.map((i) => ({ value: i, label: t(($) => $.account.identifierTypes[i]) }))}
         />
-        {identifierType !== "unknown" && (
+        {/* Email/phone are linked (derived), not retyped. Username is free text. */}
+        {identifierType === "email" && (
+          <div className="flex flex-col gap-2">
+            <Select
+              value={identifierAccountId}
+              onValueChange={(v) => {
+                if (v === ADD_NEW) setAddingEmail(true);
+                else setIdentifierAccountId(v);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t(($) => $.accountForm.identifierEmailLink)} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NONE}>{t(($) => $.accountForm.identifierEmailSelf)}</SelectItem>
+                {otherAccounts
+                  .filter((a) => a.identifierType === "email")
+                  .map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.name}
+                    </SelectItem>
+                  ))}
+                <SelectItem value={ADD_NEW}>+ {t(($) => $.accountForm.createEmailAccount)}</SelectItem>
+              </SelectContent>
+            </Select>
+            {addingEmail && (
+              <div className="flex gap-2">
+                <Input
+                  value={newEmailName}
+                  onChange={(e) => setNewEmailName(e.target.value)}
+                  placeholder={t(($) => $.accountForm.newEmailAccountPlaceholder)}
+                  className="h-8 text-sm"
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={createEmailAccount}
+                  disabled={!newEmailName.trim()}
+                >
+                  <Plus className="size-3.5" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+        {identifierType === "phone" && (
+          <PhonePicker value={identifierPhoneId} onChange={setIdentifierPhoneId} />
+        )}
+        {identifierType === "username" && (
           <Input
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
@@ -252,7 +327,13 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
         />
         {usesAuthApp && (
           <div className="flex flex-col gap-2">
-            <Select value={authenticatorAppId} onValueChange={setAuthenticatorAppId}>
+            <Select
+              value={authenticatorAppId}
+              onValueChange={(v) => {
+                if (v === ADD_NEW) setAddingApp(true);
+                else setAuthenticatorAppId(v);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder={t(($) => $.accountForm.authAppPlaceholder)} />
               </SelectTrigger>
@@ -263,19 +344,23 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
                     {app.name}
                   </SelectItem>
                 ))}
+                <SelectItem value={ADD_NEW}>+ {t(($) => $.accountForm.addAuthApp)}</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-2">
-              <Input
-                value={newAppName}
-                onChange={(e) => setNewAppName(e.target.value)}
-                placeholder={t(($) => $.accountForm.newAuthAppPlaceholder)}
-                className="h-8 text-sm"
-              />
-              <Button type="button" variant="outline" size="sm" onClick={createApp} disabled={!newAppName.trim()}>
-                <Plus className="size-3.5" />
-              </Button>
-            </div>
+            {addingApp && (
+              <div className="flex gap-2">
+                <Input
+                  value={newAppName}
+                  onChange={(e) => setNewAppName(e.target.value)}
+                  placeholder={t(($) => $.accountForm.newAuthAppPlaceholder)}
+                  className="h-8 text-sm"
+                  autoFocus
+                />
+                <Button type="button" variant="outline" size="sm" onClick={createApp} disabled={!newAppName.trim()}>
+                  <Plus className="size-3.5" />
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </Section>
@@ -317,13 +402,12 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
                 </SelectContent>
               </Select>
             ) : r.type === "phone" ? (
-              <Input
-                value={r.value ?? ""}
-                onChange={(e) => updateRecovery(r.id, { value: e.target.value })}
-                placeholder={t(($) => $.accountForm.recoveryPhonePlaceholder)}
-                className="flex-1"
-                inputMode="tel"
-              />
+              <div className="flex-1">
+                <PhonePicker
+                  value={r.phoneId}
+                  onChange={(id) => updateRecovery(r.id, { phoneId: id })}
+                />
+              </div>
             ) : (
               <div className="flex-1" />
             )}
@@ -372,25 +456,33 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
           <Switch id="backup-switch" checked={hasBackupCodes} onCheckedChange={setHasBackupCodes} />
         </div>
         {hasBackupCodes && (
-          <Input
-            value={backupCodesLocation}
-            onChange={(e) => setBackupCodesLocation(e.target.value)}
-            placeholder={t(($) => $.accountForm.backupCodesPlaceholder)}
-          />
-        )}
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            value={keyFileLabel}
-            onChange={(e) => setKeyFileLabel(e.target.value)}
-            placeholder={t(($) => $.accountForm.keyFilePlaceholder)}
-          />
-          {keyFileLabel.trim() && (
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs">{t(($) => $.accountForm.backupCodesLocation)}</Label>
+            <p className="text-xs text-muted-foreground">{t(($) => $.accountForm.backupCodesHint)}</p>
             <Input
-              value={keyFileLocation}
-              onChange={(e) => setKeyFileLocation(e.target.value)}
-              placeholder={t(($) => $.accountForm.keyFileLocationPlaceholder)}
+              value={backupCodesLocation}
+              onChange={(e) => setBackupCodesLocation(e.target.value)}
+              placeholder={t(($) => $.accountForm.backupCodesPlaceholder)}
             />
-          )}
+          </div>
+        )}
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs">{t(($) => $.accountForm.keyFileLabel)}</Label>
+          <p className="text-xs text-muted-foreground">{t(($) => $.accountForm.keyFileHint)}</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              value={keyFileLabel}
+              onChange={(e) => setKeyFileLabel(e.target.value)}
+              placeholder={t(($) => $.accountForm.keyFilePlaceholder)}
+            />
+            {keyFileLabel.trim() && (
+              <Input
+                value={keyFileLocation}
+                onChange={(e) => setKeyFileLocation(e.target.value)}
+                placeholder={t(($) => $.accountForm.keyFileLocationPlaceholder)}
+              />
+            )}
+          </div>
         </div>
       </Section>
 
@@ -404,7 +496,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
         />
       </Section>
 
-      <div className="sticky bottom-0 flex gap-2 border-t bg-background py-3">
+      <div className="flex gap-2 pt-1">
         <Button type="submit" className="flex-1" disabled={!name.trim()}>
           {t(($) => $.common.save)}
         </Button>
@@ -415,6 +507,70 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
         )}
       </div>
     </form>
+  );
+}
+
+const ADD_NEW = "__add_new__";
+
+/** Link an existing phone number, or reveal a field to create one inline. */
+function PhonePicker({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange: (id: string | undefined) => void;
+}) {
+  const { t } = useTranslation();
+  const { phoneNumbers, addPhoneNumber } = useInventory();
+  const [adding, setAdding] = useState(false);
+  const [newLabel, setNewLabel] = useState("");
+
+  const create = () => {
+    if (!newLabel.trim()) return;
+    const id = addPhoneNumber({ label: newLabel.trim() });
+    onChange(id);
+    setNewLabel("");
+    setAdding(false);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Select
+        value={value ?? NONE}
+        onValueChange={(v) => {
+          if (v === ADD_NEW) setAdding(true);
+          else onChange(v === NONE ? undefined : v);
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder={t(($) => $.accountForm.phonePlaceholder)} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={NONE}>{t(($) => $.accountForm.noneOption)}</SelectItem>
+          {phoneNumbers.map((p) => (
+            <SelectItem key={p.id} value={p.id}>
+              {p.label}
+            </SelectItem>
+          ))}
+          <SelectItem value={ADD_NEW}>+ {t(($) => $.accountForm.addPhone)}</SelectItem>
+        </SelectContent>
+      </Select>
+      {adding && (
+        <div className="flex gap-2">
+          <Input
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            placeholder={t(($) => $.accountForm.newPhonePlaceholder)}
+            className="h-8 text-sm"
+            inputMode="tel"
+            autoFocus
+          />
+          <Button type="button" variant="outline" size="sm" onClick={create} disabled={!newLabel.trim()}>
+            <Plus className="size-3.5" />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 

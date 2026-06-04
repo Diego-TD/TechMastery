@@ -24,6 +24,7 @@ export const LOGIN_METHODS: readonly LoginMethod[] = [
 export const TWO_FACTORS: readonly TwoFactorStatus[] = [
   "none",
   "sms",
+  "email",
   "authenticator_app",
   "security_key",
   "unknown",
@@ -50,9 +51,12 @@ export const DEVICE_KINDS: readonly DeviceKind[] = [
 ];
 
 export const DEVICE_LOCKS: readonly DeviceLock[] = [
-  "biometric",
+  "face",
+  "fingerprint",
   "pin",
   "password",
   "none",
   "unknown",
 ];
+
+export const REAL_DEVICE_LOCKS: readonly DeviceLock[] = ["face", "fingerprint", "pin", "password"];

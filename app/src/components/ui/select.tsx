@@ -4,63 +4,11 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
+import { usePortalContainer } from "@/features/shared/PortalContainer";
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
-const SELECT_OPEN_ATTR = "data-tm-select-open";
-let openSelectCount = 0;
-let clearSelectOpenTimer: ReturnType<typeof window.setTimeout> | undefined;
-
-function markSelectOpen(open: boolean) {
-  if (typeof document === "undefined") return;
-
-  if (clearSelectOpenTimer) {
-    window.clearTimeout(clearSelectOpenTimer);
-    clearSelectOpenTimer = undefined;
-  }
-
-  openSelectCount = open ? openSelectCount + 1 : Math.max(0, openSelectCount - 1);
-  if (openSelectCount > 0) {
-    document.body.setAttribute(SELECT_OPEN_ATTR, "true");
-    return;
-  }
-
-  clearSelectOpenTimer = window.setTimeout(() => {
-    if (openSelectCount === 0) document.body.removeAttribute(SELECT_OPEN_ATTR);
-  }, 150);
-}
-
 function Select(props: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  const { open, defaultOpen } = props;
-  const openRef = React.useRef(Boolean(open ?? defaultOpen));
-
-  React.useEffect(() => {
-    if (open === undefined || openRef.current === open) return;
-    markSelectOpen(open);
-    openRef.current = open;
-  }, [open]);
-
-  React.useEffect(
-    () => () => {
-      if (openRef.current) markSelectOpen(false);
-    },
-    [],
-  );
-
-  return (
-    <SelectPrimitive.Root
-      {...props}
-      data-slot="select"
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={(nextOpen) => {
-        if (openRef.current !== nextOpen) {
-          markSelectOpen(nextOpen);
-          openRef.current = nextOpen;
-        }
-        props.onOpenChange?.(nextOpen);
-      }}
-    />
-  );
+  return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
 
 function SelectGroup({
@@ -115,8 +63,10 @@ function SelectContent({
   align = "center",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  // Inside a mobile drawer, portal into the drawer so taps stay "inside" it.
+  const container = usePortalContainer();
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal container={container ?? undefined}>
       <SelectPrimitive.Content
         data-slot="select-content"
         data-align-trigger={position === "item-aligned"}
