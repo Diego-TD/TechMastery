@@ -12,7 +12,10 @@
     "ctaSubtext": "Inicia sesión para empezar a seguir tu progreso."
   },
   "landing": {
-    "valueProp": "Lleva tus cuentas, dispositivos y tu progreso en un solo lugar, con calma — y gana confianza real con la tecnología que usas.",
+    "eyebrow": "Para tu vida digital diaria",
+    "headline": "Seguridad digital,",
+    "headlineAccent": "hecha entendible.",
+    "valueProp": "TechMastery mapea tus cuentas, dispositivos y rutas de recuperación para que veas qué depende de qué, detectes puntos débiles y des un siguiente paso práctico — sin guardar contraseñas.",
     "signInHint": "¿Ya tienes una cuenta?"
   },
   "common": {

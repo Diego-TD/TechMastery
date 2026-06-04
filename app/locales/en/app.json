@@ -12,7 +12,10 @@
     "ctaSubtext": "Sign in to start tracking your mastery."
   },
   "landing": {
-    "valueProp": "Keep your accounts, devices, and readiness in one calm place — and build real confidence with the tech you rely on.",
+    "eyebrow": "For everyday digital life",
+    "headline": "Digital safety,",
+    "headlineAccent": "made understandable.",
+    "valueProp": "TechMastery maps your accounts, devices, and recovery paths so you can see what depends on what, spot weak points, and take one practical next step — without storing passwords.",
     "signInHint": "Already have an account?"
   },
   "common": {

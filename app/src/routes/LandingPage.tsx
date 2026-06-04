@@ -19,10 +19,16 @@ export function LandingPage() {
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 pb-16">
-        <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
-          <div className="flex flex-col gap-4">
-            <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-              {t(($) => $.shell.title)}
+        <div className="flex w-full max-w-lg flex-col items-center gap-8 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
+              {t(($) => $.landing.eyebrow)}
+            </span>
+            <h1 className="font-serif text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+              {t(($) => $.landing.headline)}{" "}
+              <span className="text-primary">
+                {t(($) => $.landing.headlineAccent)}
+              </span>
             </h1>
             <p className="text-lg text-muted-foreground text-balance">
               {t(($) => $.landing.valueProp)}
