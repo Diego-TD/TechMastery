@@ -1,17 +1,5 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-/** True when an event target lives inside a Radix popover, Select, or toast. */
-function fromPopover(target: EventTarget | null): boolean {
-  return (
-    target instanceof Element &&
-    Boolean(
-      target.closest(
-        "[data-radix-popper-content-wrapper],[data-radix-select-viewport],[data-slot='select-content'],[data-sonner-toaster]",
-      ),
-    )
-  );
-}
 import {
   Drawer,
   DrawerContent,
@@ -26,6 +14,28 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+
+const MENU_CONTENT_SELECTOR =
+  "[data-radix-popper-content-wrapper],[data-radix-select-viewport],[data-slot='select-content'],[data-slot='dropdown-menu-content']";
+const FLOATING_CONTENT_SELECTOR = `${MENU_CONTENT_SELECTOR},[data-sonner-toaster]`;
+const SELECT_OPEN_SELECTOR = "[data-tm-select-open]";
+
+/** True when an event target lives inside a Radix popover, Select, or toast. */
+function fromFloatingContent(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest(FLOATING_CONTENT_SELECTOR));
+}
+
+function openFloatingContentInsideDrawer(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    Boolean(target.closest("[data-slot='drawer-content']")) &&
+    Boolean(document.querySelector(MENU_CONTENT_SELECTOR))
+  );
+}
+
+function selectDismissalInProgress(): boolean {
+  return typeof document !== "undefined" && Boolean(document.querySelector(SELECT_OPEN_SELECTOR));
+}
 
 type Props = {
   open: boolean;
@@ -42,19 +52,34 @@ type Props = {
  */
 export function ResponsivePanel({ open, onOpenChange, title, description, children }: Props) {
   const isMobile = useIsMobile();
+  const ignoreNextDrawerCloseRef = useRef(false);
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && (ignoreNextDrawerCloseRef.current || selectDismissalInProgress())) {
+            ignoreNextDrawerCloseRef.current = false;
+            return;
+          }
+          onOpenChange(nextOpen);
+        }}
+      >
         <DrawerContent
           className="bg-background"
           // A tap on an open Select/dropdown (portaled outside the drawer) must
           // NOT dismiss the drawer and lose the user's input.
+          onPointerDownCapture={(e) => {
+            if (openFloatingContentInsideDrawer(e.target)) {
+              ignoreNextDrawerCloseRef.current = true;
+            }
+          }}
           onPointerDownOutside={(e) => {
-            if (fromPopover(e.target)) e.preventDefault();
+            if (fromFloatingContent(e.target) || openFloatingContentInsideDrawer(e.target)) e.preventDefault();
           }}
           onInteractOutside={(e) => {
-            if (fromPopover(e.target)) e.preventDefault();
+            if (fromFloatingContent(e.target) || openFloatingContentInsideDrawer(e.target)) e.preventDefault();
           }}
         >
           <DrawerHeader className="text-left">

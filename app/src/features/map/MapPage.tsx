@@ -1,5 +1,5 @@
 import "@xyflow/react/dist/style.css";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import {
@@ -49,8 +49,19 @@ import {
 const nodeTypes = { map: MapNode };
 const ALL = "__all__";
 type MapView = "tree" | "web";
+const flowThemeVars = {
+  "--xy-controls-box-shadow": "0 1px 3px rgb(0 0 0 / 0.12)",
+  "--xy-controls-button-background-color": "var(--card)",
+  "--xy-controls-button-background-color-hover": "var(--muted)",
+  "--xy-controls-button-border-color": "var(--border)",
+  "--xy-controls-button-color": "var(--foreground)",
+  "--xy-controls-button-color-hover": "var(--foreground)",
+} as CSSProperties;
 
-function toRFNode(n: GraphNode, t: ReturnType<typeof useTranslation>["t"]): Node {
+function toRFNode(
+  n: GraphNode,
+  t: ReturnType<typeof useTranslation>["t"],
+): Node {
   let data: MapNodeData;
   if (n.kind === "account") {
     const a = n.account;
@@ -60,8 +71,10 @@ function toRFNode(n: GraphNode, t: ReturnType<typeof useTranslation>["t"]): Node
       sublabel: t(($) => $.lifeAreas[a.lifeArea]),
       iconName: a.lifeArea,
       risk:
-        !a.mfaMethods.some((m) => m === "sms" || m === "authenticator_app" || m === "security_key") ||
-        a.recoveryOptions.length === 0,
+        !a.mfaMethods.some(
+          (m) =>
+            m === "sms" || m === "authenticator_app" || m === "security_key",
+        ) || a.recoveryOptions.length === 0,
       Icon: LIFE_AREA_ICON[a.lifeArea],
     };
   } else if (n.kind === "device") {
@@ -73,9 +86,19 @@ function toRFNode(n: GraphNode, t: ReturnType<typeof useTranslation>["t"]): Node
       Icon: DEVICE_ICON[n.device.kind],
     };
   } else if (n.kind === "authenticator") {
-    data = { kind: "authenticator", label: n.app.name, iconName: "authenticator", Icon: ShieldCheck };
+    data = {
+      kind: "authenticator",
+      label: n.app.name,
+      iconName: "authenticator",
+      Icon: ShieldCheck,
+    };
   } else {
-    data = { kind: "recovery", label: n.label, iconName: "recovery", Icon: RECOVERY_ICON };
+    data = {
+      kind: "recovery",
+      label: n.label,
+      iconName: "recovery",
+      Icon: RECOVERY_ICON,
+    };
   }
   return { id: n.id, type: "map", position: { x: 0, y: 0 }, data };
 }
@@ -87,8 +110,17 @@ function toRFEdge(e: GraphEdge): Edge {
     source: e.source,
     target: e.target,
     type: "smoothstep",
-    style: { stroke: style.stroke, strokeWidth: 1.5, strokeDasharray: style.dashed ? "5 4" : undefined },
-    markerEnd: { type: MarkerType.ArrowClosed, color: style.stroke, width: 16, height: 16 },
+    style: {
+      stroke: style.stroke,
+      strokeWidth: 1.5,
+      strokeDasharray: style.dashed ? "5 4" : undefined,
+    },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: style.stroke,
+      width: 16,
+      height: 16,
+    },
   };
 }
 
@@ -105,7 +137,10 @@ export function MapPage() {
   const { nodes, edges } = useMemo(() => {
     const rfNodes = graph.nodes.map((n) => toRFNode(n, t));
     const rfEdges = graph.edges.map(toRFEdge);
-    const laidOut = view === "web" ? forceLayout(rfNodes, rfEdges) : layoutGraph(rfNodes, rfEdges);
+    const laidOut =
+      view === "web"
+        ? forceLayout(rfNodes, rfEdges)
+        : layoutGraph(rfNodes, rfEdges);
     return { nodes: laidOut, edges: rfEdges };
   }, [graph, t, view]);
 
@@ -115,8 +150,12 @@ export function MapPage() {
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-serif text-2xl font-semibold">{t(($) => $.map.title)}</h1>
-          <p className="text-sm text-muted-foreground">{t(($) => $.map.subtitle)}</p>
+          <h1 className="font-serif text-2xl font-semibold">
+            {t(($) => $.map.title)}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {t(($) => $.map.subtitle)}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ChipChoice
@@ -153,7 +192,9 @@ export function MapPage() {
             <EmptyDescription>{t(($) => $.map.emptyDesc)}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button onClick={() => setAdding(true)}>{t(($) => $.map.emptyCta)}</Button>
+            <Button onClick={() => setAdding(true)}>
+              {t(($) => $.map.emptyCta)}
+            </Button>
           </EmptyContent>
         </Empty>
       ) : (
@@ -181,7 +222,11 @@ export function MapPage() {
         open={selected !== undefined}
         onOpenChange={(o) => !o && setSelected(undefined)}
       />
-      <AddAccountPanel open={adding} onOpenChange={setAdding} onAdded={(id) => setSelected(id)} />
+      <AddAccountPanel
+        open={adding}
+        onOpenChange={setAdding}
+        onAdded={(id) => setSelected(id)}
+      />
     </div>
   );
 }
@@ -202,6 +247,7 @@ function FlowCanvas({
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   return (
     <ReactFlow
+      style={flowThemeVars}
       colorMode={colorMode}
       nodes={nodes}
       edges={edges}
@@ -214,7 +260,8 @@ function FlowCanvas({
       edgesFocusable={false}
       proOptions={{ hideAttribution: true }}
       onNodeClick={(_, node) => {
-        if ((node.data as unknown as MapNodeData).kind === "account") onSelectAccount(node.id);
+        if ((node.data as unknown as MapNodeData).kind === "account")
+          onSelectAccount(node.id);
       }}
     >
       <Background gap={18} className="opacity-50" />
@@ -227,7 +274,9 @@ function Legend() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-lg border bg-muted/30 px-3 py-2 text-xs">
-      <span className="font-medium text-muted-foreground">{t(($) => $.map.legendTitle)}:</span>
+      <span className="font-medium text-muted-foreground">
+        {t(($) => $.map.legendTitle)}:
+      </span>
       {EDGE_KINDS.map((k) => (
         <span key={k} className="flex items-center gap-1.5">
           <span

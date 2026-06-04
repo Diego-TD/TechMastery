@@ -131,17 +131,21 @@
 }
 
 /* React Flow zoom/fit controls — theme-aware (xyflow's defaults are light-only). */
-.react-flow__controls {
+.react-flow__controls,
+.xy-flow__controls {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
-.react-flow__controls-button {
+.react-flow__controls-button,
+.xy-flow__controls-button {
   background: var(--card);
   border-bottom: 1px solid var(--border);
   color: var(--foreground);
 }
-.react-flow__controls-button:hover {
+.react-flow__controls-button:hover,
+.xy-flow__controls-button:hover {
   background: var(--muted);
 }
-.react-flow__controls-button svg {
+.react-flow__controls-button svg,
+.xy-flow__controls-button svg {
   fill: currentColor;
 }
