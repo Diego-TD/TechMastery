@@ -28,3 +28,5 @@ reports/
 
 # vitest coverage reports
 coverage/
+
+docs/
