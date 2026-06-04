@@ -77,13 +77,17 @@
     "unknown": "Not sure yet"
   },
   "account": {
-    "authMethods": {
-      "password": "Password",
-      "social_login": "Sign in with another account",
-      "passkey": "Passkey",
-      "magic_link": "Magic link",
-      "sms_code": "SMS code",
+    "identifierTypes": {
+      "email": "Email",
+      "phone": "Phone",
+      "username": "Username",
       "unknown": "Not sure"
+    },
+    "loginMethods": {
+      "password": "Password",
+      "passkey": "Passkey",
+      "email_code": "Email code",
+      "social": "Social login"
     },
     "twoFactor": {
       "none": "No 2FA",
@@ -186,12 +190,24 @@
     "addTitle": "Add an account",
     "editTitle": "Edit account",
     "subtitle": "Metadata only — never passwords or recovery codes.",
+    "sectionBasics": "Basics",
+    "sectionIdentifier": "How you sign in",
+    "identifierHint": "What you type to log in — the rest you can leave as “Not sure”.",
+    "identifierPlaceholder": "e.g. d•••@gmail.com (optional)",
+    "sectionLogin": "Login method",
+    "sectionTwoFactor": "Two-factor (2FA)",
+    "sectionRecovery": "Recovery options",
+    "recoveryEmpty": "No recovery path yet — add one if you know it.",
+    "addRecovery": "Add recovery",
+    "authAppPlaceholder": "Which authenticator app?",
+    "newAuthAppPlaceholder": "New authenticator app…",
+    "sectionBackup": "Backup & files",
     "name": "Account name",
     "namePlaceholder": "e.g. Gmail, BBVA, Instagram",
     "provider": "Provider",
     "providerPlaceholder": "e.g. Google, Apple",
     "lifeArea": "Life area",
-    "importance": "How important is it?",
+    "importance": "Importance",
     "authMethod": "How do you log in?",
     "twoFactor": "Second factor (2FA)",
     "recovery": "Recovery method",
@@ -280,6 +296,7 @@
       "recovery_email": "Recovers through this email",
       "recovery_phone": "Needs a code from your phone",
       "social_login": "You sign in with the lost account",
+      "authenticator": "Its 2FA code is on the lost device",
       "stored_here": "Its access is stored here"
     },
     "whatToDo": "What you can do now"

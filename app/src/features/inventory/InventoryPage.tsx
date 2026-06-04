@@ -79,15 +79,9 @@ export function InventoryPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="font-serif text-2xl font-semibold">{t(($) => $.inventory.title)}</h1>
-          <p className="text-sm text-muted-foreground">{t(($) => $.inventory.subtitle)}</p>
-        </div>
-        <Button onClick={() => setAdding(true)}>
-          <Plus className="size-4" />
-          {t(($) => $.inventory.addAccount)}
-        </Button>
+      <header>
+        <h1 className="font-serif text-2xl font-semibold">{t(($) => $.inventory.title)}</h1>
+        <p className="text-sm text-muted-foreground">{t(($) => $.inventory.subtitle)}</p>
       </header>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

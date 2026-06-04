@@ -1,6 +1,7 @@
 import type { LifeArea } from "@shared/enums";
 import type {
   Account,
+  AuthenticatorApp,
   Device,
   MapData,
   Readiness,
@@ -18,14 +19,10 @@ import type {
 export type GraphNode =
   | { id: string; kind: "account"; account: Account }
   | { id: string; kind: "device"; device: Device }
+  | { id: string; kind: "authenticator"; app: AuthenticatorApp }
   | { id: string; kind: "recovery"; label: string };
 
-/**
- * Three relationships, kept deliberately few so the legend reads at a glance:
- * - runs_on:    account ⇒ device it's used on
- * - recovers:   account ⇒ the email/phone that recovers it
- * - depends_on: account ⇒ another account it needs (social login or other)
- */
+/** Three relationships only — see the legend. */
 export type GraphEdgeKind = "runs_on" | "recovers" | "depends_on";
 
 export type GraphEdge = {
@@ -39,15 +36,10 @@ export type GraphModel = { nodes: GraphNode[]; edges: GraphEdge[] };
 
 const phoneNodeId = (num: string) => `rec_phone_${num.replace(/\D/g, "")}`;
 
-/**
- * Build the full dependency graph from the map. When `lifeArea` is set, only
- * accounts in that area are kept — but their connected devices, recovery
- * anchors, and depended-on accounts stay visible, since the point of the map
- * is to see cross-area dependencies.
- */
 export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
   const accountsById = new Map(data.accounts.map((a) => [a.id, a]));
   const devicesById = new Map(data.devices.map((d) => [d.id, d]));
+  const appsById = new Map(data.authenticatorApps.map((a) => [a.id, a]));
 
   const rootAccounts =
     lifeArea === undefined
@@ -56,6 +48,8 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
 
   const nodes = new Map<string, GraphNode>();
   const edges: GraphEdge[] = [];
+  const pushEdge = (source: string, target: string, kind: GraphEdgeKind) =>
+    edges.push({ id: `${source}-${kind}-${target}`, source, target, kind });
 
   const ensureAccount = (id: string) => {
     const acc = accountsById.get(id);
@@ -64,6 +58,16 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
   const ensureDevice = (id: string) => {
     const dev = devicesById.get(id);
     if (dev && !nodes.has(id)) nodes.set(id, { id, kind: "device", device: dev });
+  };
+  const ensureApp = (id: string) => {
+    const app = appsById.get(id);
+    if (app && !nodes.has(id)) {
+      nodes.set(id, { id, kind: "authenticator", app });
+      if (app.deviceId) {
+        ensureDevice(app.deviceId);
+        if (devicesById.has(app.deviceId)) pushEdge(id, app.deviceId, "runs_on");
+      }
+    }
   };
   const ensurePhone = (num: string) => {
     const id = phoneNodeId(num);
@@ -76,55 +80,25 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
 
     for (const deviceId of acc.deviceIds) {
       ensureDevice(deviceId);
-      if (devicesById.has(deviceId)) {
-        edges.push({
-          id: `${acc.id}-runs_on-${deviceId}`,
-          source: acc.id,
-          target: deviceId,
-          kind: "runs_on",
-        });
-      }
+      if (devicesById.has(deviceId)) pushEdge(acc.id, deviceId, "runs_on");
     }
 
     if (acc.socialLoginAccountId) {
       ensureAccount(acc.socialLoginAccountId);
-      edges.push({
-        id: `${acc.id}-depends_on-${acc.socialLoginAccountId}`,
-        source: acc.id,
-        target: acc.socialLoginAccountId,
-        kind: "depends_on",
-      });
+      pushEdge(acc.id, acc.socialLoginAccountId, "depends_on");
     }
 
-    if (acc.recoveryEmailAccountId && acc.recoveryEmailAccountId !== acc.id) {
-      ensureAccount(acc.recoveryEmailAccountId);
-      edges.push({
-        id: `${acc.id}-recovers-${acc.recoveryEmailAccountId}`,
-        source: acc.id,
-        target: acc.recoveryEmailAccountId,
-        kind: "recovers",
-      });
+    if (acc.authenticatorAppId) {
+      ensureApp(acc.authenticatorAppId);
+      if (appsById.has(acc.authenticatorAppId)) pushEdge(acc.id, acc.authenticatorAppId, "depends_on");
     }
 
-    if (acc.recoveryPhoneNumber) {
-      const pid = ensurePhone(acc.recoveryPhoneNumber);
-      edges.push({
-        id: `${acc.id}-recovers-${pid}`,
-        source: acc.id,
-        target: pid,
-        kind: "recovers",
-      });
-    }
-
-    for (const depId of acc.dependsOnAccountIds) {
-      ensureAccount(depId);
-      if (accountsById.has(depId)) {
-        edges.push({
-          id: `${acc.id}-depends_on-${depId}`,
-          source: acc.id,
-          target: depId,
-          kind: "depends_on",
-        });
+    for (const r of acc.recoveryOptions) {
+      if (r.type === "email" && r.targetAccountId && r.targetAccountId !== acc.id) {
+        ensureAccount(r.targetAccountId);
+        pushEdge(acc.id, r.targetAccountId, "recovers");
+      } else if (r.type === "phone" && r.value) {
+        pushEdge(acc.id, ensurePhone(r.value), "recovers");
       }
     }
   }
@@ -137,8 +111,8 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
 // ---------------------------------------------------------------------------
 
 const isUnknown = (v: string) => v === "unknown";
-const hasTwoFactor = (a: Account) =>
-  a.twoFactor !== "none" && a.twoFactor !== "unknown";
+const hasTwoFactor = (a: Account) => a.twoFactor !== "none" && a.twoFactor !== "unknown";
+const hasRecovery = (a: Account) => a.recoveryOptions.length > 0;
 const matters = (a: Account) => a.importance === "high" || a.importance === "medium";
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 const pct = (good: number, total: number) => (total === 0 ? 100 : (good / total) * 100);
@@ -152,8 +126,10 @@ export function dependencyFanIn(accounts: Account[]): Map<string, string[]> {
     fan.set(hubId, list);
   };
   for (const a of accounts) {
-    if (a.recoveryEmailAccountId) add(a.recoveryEmailAccountId, a.id);
     if (a.socialLoginAccountId) add(a.socialLoginAccountId, a.id);
+    for (const r of a.recoveryOptions) {
+      if (r.type === "email" && r.targetAccountId) add(r.targetAccountId, a.id);
+    }
   }
   return fan;
 }
@@ -172,9 +148,7 @@ export function computeReadiness(data: MapData): Readiness {
   const highImportance = accounts.filter((a) => a.importance === "high");
 
   const protectionWeak = important.filter((a) => !hasTwoFactor(a)).map((a) => a.id);
-  const recoveryWeak = accounts
-    .filter((a) => a.recovery === "none" || isUnknown(a.recovery))
-    .map((a) => a.id);
+  const recoveryWeak = accounts.filter((a) => !hasRecovery(a)).map((a) => a.id);
   const deviceWeak = devices
     .filter((d) => d.lock === "none" || d.lock === "unknown" || !d.findMyEnabled)
     .map((d) => d.id);
@@ -185,7 +159,7 @@ export function computeReadiness(data: MapData): Readiness {
 
   const unknownWeak = accounts
     .filter(
-      (a) => isUnknown(a.authMethod) || isUnknown(a.twoFactor) || isUnknown(a.recovery),
+      (a) => isUnknown(a.identifierType) || a.loginMethods.length === 0 || isUnknown(a.twoFactor),
     )
     .map((a) => a.id);
 
@@ -212,7 +186,6 @@ export function computeReadiness(data: MapData): Readiness {
     },
     {
       key: "dependency_visibility",
-      // The more accounts funnel through one hub, the lower the score.
       score: clamp(100 - Math.max(0, hubFan - 1) * 14),
       weakItemIds: hub && hubFan > 2 ? hub.dependents : [],
     },
@@ -223,11 +196,8 @@ export function computeReadiness(data: MapData): Readiness {
     },
   ];
 
-  const overall = clamp(
-    categories.reduce((sum, c) => sum + c.score, 0) / categories.length,
-  );
+  const overall = clamp(categories.reduce((sum, c) => sum + c.score, 0) / categories.length);
 
-  // Build a bounded, severity-sorted action list from the weak items.
   const actions: RecommendedAction[] = [];
   for (const id of protectionWeak) {
     const a = accounts.find((x) => x.id === id)!;
@@ -238,31 +208,16 @@ export function computeReadiness(data: MapData): Readiness {
       severity: a.importance === "high" ? "high" : "medium",
     });
   }
-  for (const id of recoveryWeak) {
+  for (const id of recoveryWeak)
     actions.push({ id: `add_recovery-${id}`, kind: "add_recovery", targetId: id, severity: "high" });
-  }
-  for (const id of backupWeak) {
-    actions.push({
-      id: `save_backup_codes-${id}`,
-      kind: "save_backup_codes",
-      targetId: id,
-      severity: "medium",
-    });
-  }
-  if (hub && hubFan > 2) {
-    actions.push({
-      id: `reduce_google_dependency-${hub.id}`,
-      kind: "reduce_google_dependency",
-      targetId: hub.id,
-      severity: "medium",
-    });
-  }
-  for (const id of deviceWeak) {
+  for (const id of backupWeak)
+    actions.push({ id: `save_backup_codes-${id}`, kind: "save_backup_codes", targetId: id, severity: "medium" });
+  if (hub && hubFan > 2)
+    actions.push({ id: `reduce_google_dependency-${hub.id}`, kind: "reduce_google_dependency", targetId: hub.id, severity: "medium" });
+  for (const id of deviceWeak)
     actions.push({ id: `set_device_lock-${id}`, kind: "set_device_lock", targetId: id, severity: "medium" });
-  }
-  for (const id of unknownWeak) {
+  for (const id of unknownWeak)
     actions.push({ id: `resolve_unknown-${id}`, kind: "resolve_unknown", targetId: id, severity: "low" });
-  }
 
   const order = { high: 0, medium: 1, low: 2 } as const;
   actions.sort((a, b) => order[a.severity] - order[b.severity]);
@@ -275,40 +230,46 @@ export function computeReadiness(data: MapData): Readiness {
 // ---------------------------------------------------------------------------
 
 export function runSimulation(data: MapData, kind: SimulationKind): SimulationResult {
-  const { accounts, devices } = data;
+  const { accounts, devices, authenticatorApps } = data;
   const impacts: SimulationImpact[] = [];
   const push = (i: SimulationImpact) => impacts.push(i);
 
   const deviceKindOf = (id: string) => devices.find((d) => d.id === id)?.kind;
   const usesDeviceKind = (a: Account, kinds: string[]) =>
     a.deviceIds.some((id) => kinds.includes(deviceKindOf(id) ?? ""));
+  const appById = (id?: string) => authenticatorApps.find((x) => x.id === id);
+  const phoneDeviceIds = new Set(devices.filter((d) => d.kind === "phone").map((d) => d.id));
+  /** A recovery path that doesn't route through the same phone. */
+  const hasAltEmailRecovery = (a: Account) =>
+    a.recoveryOptions.some((r) => r.type === "email" && r.targetAccountId);
   const hub = topHub(accounts);
 
   switch (kind) {
     case "lose_phone": {
       for (const a of accounts) {
-        const onPhone = usesDeviceKind(a, ["phone"]);
-        const smsOrApp = a.twoFactor === "sms" || a.twoFactor === "authenticator_app";
-        const phoneRecovery = Boolean(a.recoveryPhoneNumber);
-        if (!onPhone && !smsOrApp && !phoneRecovery) continue;
-        const blocked = smsOrApp && !a.hasBackupCodes;
+        const app = appById(a.authenticatorAppId);
+        const authOnPhone = Boolean(app?.deviceId && phoneDeviceIds.has(app.deviceId));
+        const smsOnPhone = a.twoFactor === "sms";
+        const phoneRecovery = a.recoveryOptions.some((r) => r.type === "phone");
+        if (!authOnPhone && !smsOnPhone && !phoneRecovery && !usesDeviceKind(a, ["phone"])) continue;
+
+        const codeLocked = authOnPhone || smsOnPhone; // 2FA prompt you can't answer
+        const rescued = a.hasBackupCodes || hasAltEmailRecovery(a);
         push({
           accountId: a.id,
-          reason: smsOrApp ? "recovery_phone" : phoneRecovery ? "recovery_phone" : "lives_on",
-          severity: blocked ? "blocked" : "at_risk",
+          reason: authOnPhone ? "authenticator" : phoneRecovery || smsOnPhone ? "recovery_phone" : "lives_on",
+          severity: codeLocked ? (rescued ? "at_risk" : "blocked") : "at_risk",
         });
       }
       break;
     }
     case "laptop_dies": {
-      const onLaptop = (loc?: string) =>
-        /laptop|macbook|notebook|computer|usb/i.test(loc ?? "");
+      const onLaptop = (loc?: string) => /laptop|macbook|notebook|computer|usb/i.test(loc ?? "");
       for (const a of accounts) {
         const keyFileTrapped = a.keyFile && onLaptop(a.keyFile.location);
         if (!usesDeviceKind(a, ["laptop", "desktop"]) && !keyFileTrapped) continue;
         push({
           accountId: a.id,
-          // A key file (e.g. e.firma) only on the laptop is the sharpest loss.
           reason: keyFileTrapped ? "stored_here" : "lives_on",
           severity: keyFileTrapped ? "blocked" : a.importance === "high" ? "at_risk" : "ok",
         });
@@ -324,23 +285,23 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
         }
         if (a.socialLoginAccountId === hubId) {
           push({ accountId: a.id, reason: "social_login", severity: "blocked" });
-        } else if (a.recoveryEmailAccountId === hubId) {
+        } else if (a.recoveryOptions.some((r) => r.type === "email" && r.targetAccountId === hubId)) {
           push({ accountId: a.id, reason: "recovery_email", severity: "at_risk" });
         }
       }
       break;
     }
     case "card_stolen": {
+      // A stolen card is mostly a re-issue: payments pause, accounts survive.
       for (const a of accounts) {
         if (a.lifeArea === "banking") push({ accountId: a.id, reason: "lives_on", severity: "at_risk" });
-        else if (a.lifeArea === "shopping")
-          push({ accountId: a.id, reason: "lives_on", severity: "ok" });
+        else if (a.lifeArea === "shopping") push({ accountId: a.id, reason: "stored_here", severity: "ok" });
       }
       break;
     }
     case "cloud_unavailable": {
       for (const a of accounts) {
-        if (a.lifeArea === "cloud")
+        if (a.lifeArea === "cloud" && !a.isPasswordManager)
           push({ accountId: a.id, reason: "lives_on", severity: a.importance === "high" ? "blocked" : "at_risk" });
         else if (
           /cloud|drive|icloud/i.test(a.backupCodesLocation ?? "") ||
@@ -357,13 +318,15 @@ export function runSimulation(data: MapData, kind: SimulationKind): SimulationRe
           push({ accountId: a.id, reason: "lives_on", severity: "blocked" });
           continue;
         }
-        if (manager && a.authMethod === "password") {
-          push({
-            accountId: a.id,
-            reason: "stored_here",
-            severity: a.recovery === "none" || a.recovery === "unknown" ? "blocked" : "at_risk",
-          });
-        }
+        if (!manager || !a.loginMethods.includes("password")) continue;
+        // A passkey or social sign-in means you don't need the stored password.
+        const hasAlternative = a.loginMethods.includes("passkey") || a.loginMethods.includes("social");
+        if (hasAlternative) continue;
+        push({
+          accountId: a.id,
+          reason: "stored_here",
+          severity: hasRecovery(a) ? "at_risk" : "blocked",
+        });
       }
       break;
     }

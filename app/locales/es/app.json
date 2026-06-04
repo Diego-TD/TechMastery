@@ -77,13 +77,17 @@
     "unknown": "Aún no sé"
   },
   "account": {
-    "authMethods": {
+    "identifierTypes": {
+      "email": "Correo",
+      "phone": "Teléfono",
+      "username": "Usuario",
+      "unknown": "No sé"
+    },
+    "loginMethods": {
       "password": "Contraseña",
-      "social_login": "Iniciar con otra cuenta",
       "passkey": "Llave de acceso",
-      "magic_link": "Enlace mágico",
-      "sms_code": "Código por SMS",
-      "unknown": "No estoy seguro"
+      "email_code": "Código por correo",
+      "social": "Inicio social"
     },
     "twoFactor": {
       "none": "Sin 2FA",
@@ -186,12 +190,24 @@
     "addTitle": "Agregar una cuenta",
     "editTitle": "Editar cuenta",
     "subtitle": "Solo metadatos — nunca contraseñas ni códigos de recuperación.",
+    "sectionBasics": "Básicos",
+    "sectionIdentifier": "Cómo inicias sesión",
+    "identifierHint": "Lo que escribes para entrar — el resto puedes dejarlo en «No sé».",
+    "identifierPlaceholder": "p. ej. d•••@gmail.com (opcional)",
+    "sectionLogin": "Método de inicio",
+    "sectionTwoFactor": "Segundo factor (2FA)",
+    "sectionRecovery": "Opciones de recuperación",
+    "recoveryEmpty": "Aún sin ruta de recuperación — agrega una si la conoces.",
+    "addRecovery": "Agregar recuperación",
+    "authAppPlaceholder": "¿Cuál app de autenticación?",
+    "newAuthAppPlaceholder": "Nueva app de autenticación…",
+    "sectionBackup": "Respaldos y archivos",
     "name": "Nombre de la cuenta",
     "namePlaceholder": "p. ej. Gmail, BBVA, Instagram",
     "provider": "Proveedor",
     "providerPlaceholder": "p. ej. Google, Apple",
     "lifeArea": "Área de vida",
-    "importance": "¿Qué tan importante es?",
+    "importance": "Importancia",
     "authMethod": "¿Cómo inicias sesión?",
     "twoFactor": "Segundo factor (2FA)",
     "recovery": "Método de recuperación",
@@ -280,6 +296,7 @@
       "recovery_email": "Se recupera con este correo",
       "recovery_phone": "Necesita un código de tu teléfono",
       "social_login": "Inicias sesión con la cuenta perdida",
+      "authenticator": "Su código 2FA está en el dispositivo perdido",
       "stored_here": "Su acceso está guardado aquí"
     },
     "whatToDo": "Qué puedes hacer ahora"

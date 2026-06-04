@@ -12,7 +12,15 @@ import {
 } from "react";
 import { buildGraph, computeReadiness, runSimulation, type GraphModel } from "./derive";
 import { makeSeedData } from "./seed";
-import type { Account, Device, MapData, Readiness, SimulationKind, SimulationResult } from "./types";
+import type {
+  Account,
+  AuthenticatorApp,
+  Device,
+  MapData,
+  Readiness,
+  SimulationKind,
+  SimulationResult,
+} from "./types";
 import type { LifeArea } from "@shared/enums";
 
 /**
@@ -21,14 +29,14 @@ import type { LifeArea } from "@shared/enums";
  * queries/mutations later means changing this file only — components stay put.
  */
 
-export type NewAccountInput = Omit<Account, "id" | "deviceIds" | "dependsOnAccountIds"> &
-  Partial<Pick<Account, "deviceIds" | "dependsOnAccountIds">>;
+export type NewAccountInput = Omit<Account, "id">;
 
 type MockStore = {
   data: MapData;
   addAccount: (input: NewAccountInput) => string;
   updateAccount: (id: string, patch: Partial<Account>) => void;
   addDevice: (input: Omit<Device, "id">) => string;
+  addAuthenticatorApp: (input: Omit<AuthenticatorApp, "id">) => string;
   reset: () => void;
 };
 
@@ -42,13 +50,7 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
 
   const addAccount = useCallback((input: NewAccountInput) => {
     const id = newId("acc");
-    setData((prev) => ({
-      ...prev,
-      accounts: [
-        ...prev.accounts,
-        { ...input, id, deviceIds: input.deviceIds ?? [], dependsOnAccountIds: input.dependsOnAccountIds ?? [] },
-      ],
-    }));
+    setData((prev) => ({ ...prev, accounts: [...prev.accounts, { ...input, id }] }));
     return id;
   }, []);
 
@@ -65,11 +67,20 @@ export function MockDataProvider({ children }: { children: ReactNode }) {
     return id;
   }, []);
 
+  const addAuthenticatorApp = useCallback((input: Omit<AuthenticatorApp, "id">) => {
+    const id = newId("auth");
+    setData((prev) => ({
+      ...prev,
+      authenticatorApps: [...prev.authenticatorApps, { ...input, id }],
+    }));
+    return id;
+  }, []);
+
   const reset = useCallback(() => setData(makeSeedData()), []);
 
   const value = useMemo<MockStore>(
-    () => ({ data, addAccount, updateAccount, addDevice, reset }),
-    [data, addAccount, updateAccount, addDevice, reset],
+    () => ({ data, addAccount, updateAccount, addDevice, addAuthenticatorApp, reset }),
+    [data, addAccount, updateAccount, addDevice, addAuthenticatorApp, reset],
   );
 
   return <MockDataContext.Provider value={value}>{children}</MockDataContext.Provider>;
@@ -84,8 +95,16 @@ function useStore(): MockStore {
 // --- Read/write hooks consumed by screens -------------------------------------
 
 export function useInventory() {
-  const { data, addAccount, updateAccount, addDevice } = useStore();
-  return { accounts: data.accounts, devices: data.devices, addAccount, updateAccount, addDevice };
+  const { data, addAccount, updateAccount, addDevice, addAuthenticatorApp } = useStore();
+  return {
+    accounts: data.accounts,
+    devices: data.devices,
+    authenticatorApps: data.authenticatorApps,
+    addAccount,
+    updateAccount,
+    addDevice,
+    addAuthenticatorApp,
+  };
 }
 
 export function useAccount(id: string | undefined): Account | undefined {

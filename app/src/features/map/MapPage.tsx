@@ -15,6 +15,7 @@ import type { LifeArea } from "@shared/enums";
 import { LIFE_AREAS } from "@shared/enums";
 import { useGraph } from "@/lib/mock/store";
 import type { GraphEdge, GraphNode } from "@/lib/mock/derive";
+import { ShieldCheck } from "lucide-react";
 import {
   DEVICE_ICON,
   EDGE_KINDS,
@@ -56,7 +57,7 @@ function toRFNode(n: GraphNode, t: ReturnType<typeof useTranslation>["t"]): Node
       label: a.name,
       sublabel: t(($) => $.lifeAreas[a.lifeArea]),
       iconName: a.lifeArea,
-      risk: a.twoFactor === "none" || a.recovery === "none" || a.recovery === "unknown",
+      risk: a.twoFactor === "none" || a.recoveryOptions.length === 0,
       Icon: LIFE_AREA_ICON[a.lifeArea],
     };
   } else if (n.kind === "device") {
@@ -67,6 +68,8 @@ function toRFNode(n: GraphNode, t: ReturnType<typeof useTranslation>["t"]): Node
       iconName: n.device.kind,
       Icon: DEVICE_ICON[n.device.kind],
     };
+  } else if (n.kind === "authenticator") {
+    data = { kind: "authenticator", label: n.app.name, iconName: "authenticator", Icon: ShieldCheck };
   } else {
     data = { kind: "recovery", label: n.label, iconName: "recovery", Icon: RECOVERY_ICON };
   }

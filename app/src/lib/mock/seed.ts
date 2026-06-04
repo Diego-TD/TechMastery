@@ -1,29 +1,18 @@
-import type { Account, Device, MapData } from "./types";
+import type { Account, AuthenticatorApp, Device, MapData } from "./types";
 
 /**
  * Seeded sample map for an Ensenada CS student. Designed to surface teachable
- * patterns in a demo: Gmail is the recovery hub for almost everything (single
- * point of failure), several accounts sign in *with* Google (dependency fan-out),
- * the bank has no clear recovery path, and the government account is "unknown".
+ * patterns: Gmail is the recovery hub for almost everything (single point of
+ * failure), several accounts sign in *with* Google, two authenticator apps are
+ * in play (Google + Microsoft), the bank leans on SMS + support, and the SAT
+ * e.firma is trapped on one laptop.
  */
 
 const PHONE = "+52 ••• ••• 4821";
 
 const devices: Device[] = [
-  {
-    id: "dev_iphone",
-    name: "iPhone 13",
-    kind: "phone",
-    lock: "biometric",
-    findMyEnabled: true,
-  },
-  {
-    id: "dev_macbook",
-    name: "MacBook Air",
-    kind: "laptop",
-    lock: "password",
-    findMyEnabled: true,
-  },
+  { id: "dev_iphone", name: "iPhone 13", kind: "phone", lock: "biometric", findMyEnabled: true },
+  { id: "dev_macbook", name: "MacBook Air", kind: "laptop", lock: "password", findMyEnabled: true },
   {
     id: "dev_ipad",
     name: "iPad (old)",
@@ -34,6 +23,11 @@ const devices: Device[] = [
   },
 ];
 
+const authenticatorApps: AuthenticatorApp[] = [
+  { id: "auth_google", name: "Google Authenticator", deviceId: "dev_iphone" },
+  { id: "auth_ms", name: "Microsoft Authenticator", deviceId: "dev_iphone" },
+];
+
 const accounts: Account[] = [
   {
     id: "acc_gmail",
@@ -41,12 +35,13 @@ const accounts: Account[] = [
     provider: "Google",
     lifeArea: "email",
     importance: "high",
-    authMethod: "password",
+    identifierType: "email",
+    identifier: "d•••@gmail.com",
+    loginMethods: ["password", "passkey"],
     twoFactor: "authenticator_app",
-    recovery: "phone",
+    authenticatorAppId: "auth_google",
+    recoveryOptions: [{ id: "r1", type: "phone", value: PHONE }],
     deviceIds: ["dev_iphone", "dev_macbook"],
-    recoveryPhoneNumber: PHONE,
-    dependsOnAccountIds: [],
     hasBackupCodes: true,
     backupCodesLocation: "Printed, in a drawer at home",
     notes: "Main inbox. Recovers most of my other accounts.",
@@ -57,13 +52,12 @@ const accounts: Account[] = [
     provider: "Microsoft 365",
     lifeArea: "school_work",
     importance: "high",
-    authMethod: "password",
-    twoFactor: "sms",
-    recovery: "email",
+    identifierType: "email",
+    loginMethods: ["password"],
+    twoFactor: "authenticator_app",
+    authenticatorAppId: "auth_ms",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
     deviceIds: ["dev_macbook", "dev_iphone"],
-    recoveryEmailAccountId: "acc_gmail",
-    recoveryPhoneNumber: PHONE,
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
   },
   {
@@ -72,12 +66,11 @@ const accounts: Account[] = [
     provider: "Apple",
     lifeArea: "cloud",
     importance: "high",
-    authMethod: "password",
-    twoFactor: "authenticator_app",
-    recovery: "phone",
+    identifierType: "email",
+    loginMethods: ["password"],
+    twoFactor: "sms",
+    recoveryOptions: [{ id: "r1", type: "phone", value: PHONE }],
     deviceIds: ["dev_iphone", "dev_macbook", "dev_ipad"],
-    recoveryPhoneNumber: PHONE,
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
     notes: "Photos, backups, Find My.",
   },
@@ -87,14 +80,31 @@ const accounts: Account[] = [
     provider: "BBVA México",
     lifeArea: "banking",
     importance: "high",
-    authMethod: "password",
+    identifierType: "username",
+    loginMethods: ["password"],
     twoFactor: "sms",
-    recovery: "customer_support",
+    recoveryOptions: [
+      { id: "r1", type: "customer_support" },
+      { id: "r2", type: "phone", value: PHONE },
+    ],
     deviceIds: ["dev_iphone"],
-    recoveryPhoneNumber: PHONE,
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
-    notes: "App needs SMS code on every login.",
+    notes: "App needs an SMS code on every login.",
+  },
+  {
+    id: "acc_github",
+    name: "GitHub",
+    lifeArea: "school_work",
+    importance: "high",
+    identifierType: "username",
+    loginMethods: ["password", "passkey"],
+    twoFactor: "authenticator_app",
+    authenticatorAppId: "auth_google",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
+    deviceIds: ["dev_macbook"],
+    hasBackupCodes: true,
+    backupCodesLocation: "Saved in Bitwarden",
+    notes: "Deployments depend on this.",
   },
   {
     id: "acc_instagram",
@@ -102,13 +112,12 @@ const accounts: Account[] = [
     provider: "Meta",
     lifeArea: "social",
     importance: "medium",
-    authMethod: "social_login",
-    twoFactor: "none",
-    recovery: "email",
-    deviceIds: ["dev_iphone"],
+    identifierType: "email",
+    loginMethods: ["social"],
     socialLoginAccountId: "acc_gmail",
-    recoveryEmailAccountId: "acc_gmail",
-    dependsOnAccountIds: [],
+    twoFactor: "none",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
+    deviceIds: ["dev_iphone"],
     hasBackupCodes: false,
   },
   {
@@ -116,13 +125,12 @@ const accounts: Account[] = [
     name: "Netflix",
     lifeArea: "shopping",
     importance: "low",
-    authMethod: "social_login",
-    twoFactor: "none",
-    recovery: "email",
-    deviceIds: ["dev_ipad", "dev_macbook"],
+    identifierType: "email",
+    loginMethods: ["social"],
     socialLoginAccountId: "acc_gmail",
-    recoveryEmailAccountId: "acc_gmail",
-    dependsOnAccountIds: [],
+    twoFactor: "none",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
+    deviceIds: ["dev_ipad", "dev_macbook"],
     hasBackupCodes: false,
   },
   {
@@ -131,14 +139,13 @@ const accounts: Account[] = [
     provider: "Valve",
     lifeArea: "gaming",
     importance: "medium",
-    authMethod: "password",
+    identifierType: "username",
+    loginMethods: ["password"],
     twoFactor: "authenticator_app",
-    recovery: "email",
+    authenticatorAppId: "auth_google",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
     deviceIds: ["dev_macbook"],
-    recoveryEmailAccountId: "acc_gmail",
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
-    notes: "Steam Guard on the phone.",
   },
   {
     id: "acc_sat",
@@ -146,11 +153,11 @@ const accounts: Account[] = [
     provider: "gob.mx",
     lifeArea: "government_health",
     importance: "high",
-    authMethod: "password",
+    identifierType: "username",
+    loginMethods: ["password"],
     twoFactor: "none",
-    recovery: "customer_support",
+    recoveryOptions: [{ id: "r1", type: "customer_support" }],
     deviceIds: ["dev_macbook"],
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
     keyFile: { label: "e.firma", location: "Only on the MacBook (Downloads)" },
     notes: "Login is RFC + password. The e.firma is needed for declarations.",
@@ -160,12 +167,12 @@ const accounts: Account[] = [
     name: "Bitwarden",
     lifeArea: "cloud",
     importance: "high",
-    authMethod: "password",
+    identifierType: "email",
+    loginMethods: ["password"],
     twoFactor: "authenticator_app",
-    recovery: "email",
+    authenticatorAppId: "auth_google",
+    recoveryOptions: [{ id: "r1", type: "email", targetAccountId: "acc_gmail" }],
     deviceIds: ["dev_iphone", "dev_macbook"],
-    recoveryEmailAccountId: "acc_gmail",
-    dependsOnAccountIds: [],
     hasBackupCodes: false,
     isPasswordManager: true,
     notes: "Holds most of my passwords.",
@@ -173,14 +180,14 @@ const accounts: Account[] = [
 ];
 
 export function makeSeedData(): MapData {
-  // Deep-ish clone so the in-memory store can mutate freely without touching
-  // the module-level seed (matters for HMR + multiple mounts).
   return {
     accounts: accounts.map((a) => ({
       ...a,
+      loginMethods: [...a.loginMethods],
+      recoveryOptions: a.recoveryOptions.map((r) => ({ ...r })),
       deviceIds: [...a.deviceIds],
-      dependsOnAccountIds: [...a.dependsOnAccountIds],
     })),
     devices: devices.map((d) => ({ ...d })),
+    authenticatorApps: authenticatorApps.map((a) => ({ ...a })),
   };
 }

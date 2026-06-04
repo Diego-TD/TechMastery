@@ -19,7 +19,7 @@ type Props = {
 export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
   const { t } = useTranslation();
   const account = useAccount(accountId);
-  const { accounts, devices, updateAccount } = useInventory();
+  const { accounts, devices, authenticatorApps, updateAccount } = useInventory();
   const readiness = useReadiness();
   const [editing, setEditing] = useState(false);
   const improvements = readiness.actions.filter((a) => a.targetId === accountId);
@@ -61,31 +61,43 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
           </div>
 
           <dl className="flex flex-col gap-3 text-sm">
-            <Row label={t(($) => $.accountForm.authMethod)}>
-              {t(($) => $.account.authMethods[account.authMethod])}
+            <Row label={t(($) => $.accountForm.sectionIdentifier)}>
+              {t(($) => $.account.identifierTypes[account.identifierType])}
+              {account.identifier ? ` · ${account.identifier}` : ""}
             </Row>
-            <Row label={t(($) => $.accountForm.twoFactor)}>
-              {t(($) => $.account.twoFactor[account.twoFactor])}
-            </Row>
-            <Row label={t(($) => $.accountForm.recovery)}>
-              <span className="inline-flex items-center gap-1.5">
-                <RECOVERY_ICON className="size-3.5 text-muted-foreground" />
-                {t(($) => $.account.recoveryMethods[account.recovery])}
-              </span>
+            <Row label={t(($) => $.accountForm.sectionLogin)}>
+              {account.loginMethods.length === 0
+                ? t(($) => $.common.unknown)
+                : account.loginMethods.map((m) => t(($) => $.account.loginMethods[m])).join(", ")}
             </Row>
             {account.socialLoginAccountId && (
               <Row label={t(($) => $.inventory.signsInWith)}>
                 {nameOf(accounts, account.socialLoginAccountId)}
               </Row>
             )}
-            {account.recoveryEmailAccountId && (
-              <Row label={t(($) => $.account.recoveryMethods.email)}>
-                {nameOf(accounts, account.recoveryEmailAccountId)}
-              </Row>
-            )}
-            {account.recoveryPhoneNumber && (
-              <Row label={t(($) => $.account.recoveryMethods.phone)}>
-                {account.recoveryPhoneNumber}
+            <Row label={t(($) => $.accountForm.twoFactor)}>
+              {t(($) => $.account.twoFactor[account.twoFactor])}
+              {account.authenticatorAppId
+                ? ` · ${authenticatorApps.find((x) => x.id === account.authenticatorAppId)?.name ?? ""}`
+                : ""}
+            </Row>
+            {account.recoveryOptions.length > 0 && (
+              <Row label={t(($) => $.accountForm.sectionRecovery)}>
+                <span className="inline-flex items-center gap-1.5">
+                  <RECOVERY_ICON className="size-3.5 text-muted-foreground" />
+                  <span className="flex flex-col items-end">
+                    {account.recoveryOptions.map((r) => (
+                      <span key={r.id}>
+                        {t(($) => $.account.recoveryMethods[r.type])}
+                        {r.type === "email" && r.targetAccountId
+                          ? ` → ${nameOf(accounts, r.targetAccountId)}`
+                          : r.type === "phone" && r.value
+                            ? ` → ${r.value}`
+                            : ""}
+                      </span>
+                    ))}
+                  </span>
+                </span>
               </Row>
             )}
             {account.deviceIds.length > 0 && (

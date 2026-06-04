@@ -37,16 +37,26 @@ export const LIFE_AREAS: readonly LifeArea[] = [
   "unknown",
 ];
 
-/** How a person logs into an account. */
-export const authMethodType = v.union(
-  v.literal("password"),
-  v.literal("social_login"), // "sign in with Google/Apple/etc."
-  v.literal("passkey"),
-  v.literal("magic_link"),
-  v.literal("sms_code"),
+/**
+ * What you log in *as* — the thing a user actually knows (Clerk-style). This is
+ * separate from the login method (how you prove it's you).
+ */
+export const identifierType = v.union(
+  v.literal("email"),
+  v.literal("phone"),
+  v.literal("username"),
   v.literal("unknown"),
 );
-export type AuthMethodType = Infer<typeof authMethodType>;
+export type IdentifierType = Infer<typeof identifierType>;
+
+/** How you prove it's you. An account can have several (e.g. password + passkey). */
+export const loginMethod = v.union(
+  v.literal("password"),
+  v.literal("passkey"),
+  v.literal("email_code"),
+  v.literal("social"), // "sign in with Google/Apple/etc."
+);
+export type LoginMethod = Infer<typeof loginMethod>;
 
 /** Second factor on the account. */
 export const twoFactorStatus = v.union(

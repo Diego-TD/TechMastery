@@ -1,18 +1,24 @@
 import type {
-  AuthMethodType,
   DeviceKind,
+  IdentifierType,
+  LoginMethod,
   RecoveryMethodType,
   TwoFactorStatus,
 } from "@shared/enums";
 import type { DeviceLock, Importance } from "@/lib/mock/types";
 
-export const AUTH_METHODS: readonly AuthMethodType[] = [
-  "password",
-  "social_login",
-  "passkey",
-  "magic_link",
-  "sms_code",
+export const IDENTIFIER_TYPES: readonly IdentifierType[] = [
+  "email",
+  "phone",
+  "username",
   "unknown",
+];
+
+export const LOGIN_METHODS: readonly LoginMethod[] = [
+  "password",
+  "passkey",
+  "email_code",
+  "social",
 ];
 
 export const TWO_FACTORS: readonly TwoFactorStatus[] = [
@@ -23,15 +29,14 @@ export const TWO_FACTORS: readonly TwoFactorStatus[] = [
   "unknown",
 ];
 
-export const RECOVERY_METHODS: readonly RecoveryMethodType[] = [
+/** Types offered when adding a recovery option (no "none"/"unknown" — an empty list means no recovery). */
+export const RECOVERY_TYPES: readonly RecoveryMethodType[] = [
   "email",
   "phone",
   "backup_codes",
   "security_questions",
   "recovery_contact",
   "customer_support",
-  "none",
-  "unknown",
 ];
 
 export const IMPORTANCES: readonly Importance[] = ["high", "medium", "low"];
