@@ -47,8 +47,8 @@ export function AccountDetailPanel({ accountId, open, onOpenChange }: Props) {
           accounts={accounts}
           devices={devices}
           initial={account}
-          onSubmit={(input) => {
-            updateAccount(account.id, input);
+          onSubmit={async (input) => {
+            await updateAccount(account.id, input);
             setEditing(false);
             toast.success(t(($) => $.toasts.accountUpdated));
           }}

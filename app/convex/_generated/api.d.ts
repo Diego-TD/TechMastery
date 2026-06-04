@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as inventory from "../inventory.js";
 import type * as lib_users from "../lib/users.js";
 import type * as users from "../users.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  inventory: typeof inventory;
   "lib/users": typeof lib_users;
   users: typeof users;
 }>;

@@ -91,5 +91,18 @@ export const deviceKind = v.union(
 );
 export type DeviceKind = Infer<typeof deviceKind>;
 
+export const importance = v.union(v.literal("high"), v.literal("medium"), v.literal("low"));
+export type Importance = Infer<typeof importance>;
+
+export const deviceLock = v.union(
+  v.literal("face"),
+  v.literal("fingerprint"),
+  v.literal("pin"),
+  v.literal("password"),
+  v.literal("none"),
+  v.literal("unknown"),
+);
+export type DeviceLock = Infer<typeof deviceLock>;
+
 /** Node kinds rendered on the account map. */
 export type MapNodeKind = "account" | "device" | "recovery";

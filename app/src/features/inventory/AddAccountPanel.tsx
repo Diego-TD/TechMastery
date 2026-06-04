@@ -27,8 +27,8 @@ export function AddAccountPanel({ open, onOpenChange, lockedLifeArea, onAdded }:
         accounts={accounts}
         devices={devices}
         lockedLifeArea={lockedLifeArea}
-        onSubmit={(input) => {
-          const id = addAccount(input);
+        onSubmit={async (input) => {
+          const id = await addAccount(input);
           onOpenChange(false);
           toast.success(t(($) => $.toasts.accountAdded));
           onAdded?.(id);

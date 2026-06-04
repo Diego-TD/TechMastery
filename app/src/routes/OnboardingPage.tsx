@@ -170,8 +170,8 @@ export function OnboardingPage() {
                 accounts={accounts}
                 devices={devices}
                 lockedLifeArea={area}
-                onSubmit={(input) => {
-                  addAccount(input);
+                onSubmit={async (input) => {
+                  await addAccount(input);
                   setStep("success");
                 }}
                 onCancel={() => setStep("area")}

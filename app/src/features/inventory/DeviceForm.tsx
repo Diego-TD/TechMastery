@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 
 type Props = {
   initial?: Device;
-  onSubmit: (input: Omit<Device, "id">) => void;
+  onSubmit: (input: Omit<Device, "id">) => void | Promise<void>;
   onCancel?: () => void;
 };
 
@@ -32,9 +32,9 @@ export function DeviceForm({ initial, onSubmit, onCancel }: Props) {
     });
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!name.trim()) return;
-    onSubmit({ name: name.trim(), kind, lockMethods, findMyEnabled, notes: initial?.notes });
+    await onSubmit({ name: name.trim(), kind, lockMethods, findMyEnabled, notes: initial?.notes });
   };
 
   return (
@@ -42,7 +42,7 @@ export function DeviceForm({ initial, onSubmit, onCancel }: Props) {
       className="flex flex-col gap-5"
       onSubmit={(e) => {
         e.preventDefault();
-        submit();
+        void submit();
       }}
     >
       <div className="flex flex-col gap-1.5">

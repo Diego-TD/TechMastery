@@ -55,7 +55,7 @@ type Props = {
   devices: Device[];
   initial?: Account;
   lockedLifeArea?: LifeArea;
-  onSubmit: (input: NewAccountInput) => void;
+  onSubmit: (input: NewAccountInput) => void | Promise<void>;
   onCancel?: () => void;
 };
 
@@ -74,9 +74,9 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
   const [addingEmail, setAddingEmail] = useState(false);
   const [newEmailName, setNewEmailName] = useState("");
 
-  const createEmailAccount = () => {
+  const createEmailAccount = async () => {
     if (!newEmailName.trim()) return;
-    const id = addAccount({
+    const id = await addAccount({
       name: newEmailName.trim(),
       lifeArea: "email",
       importance: "medium",
@@ -130,17 +130,17 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
   const removeRecovery = (id: string) =>
     setRecoveryOptions((prev) => prev.filter((r) => r.id !== id));
 
-  const createApp = () => {
+  const createApp = async () => {
     if (!newAppName.trim()) return;
-    const id = addAuthenticatorApp({ name: newAppName.trim() });
+    const id = await addAuthenticatorApp({ name: newAppName.trim() });
     setAuthenticatorAppId(id);
     setNewAppName("");
     setAddingApp(false);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!name.trim()) return;
-    onSubmit({
+    await onSubmit({
       name: name.trim(),
       lifeArea,
       importance,
@@ -173,7 +173,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
       className="flex flex-col gap-6 pb-2"
       onSubmit={(e) => {
         e.preventDefault();
-        submit();
+        void submit();
       }}
     >
       {/* Basics */}
@@ -262,7 +262,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={createEmailAccount}
+                  onClick={() => void createEmailAccount()}
                   disabled={!newEmailName.trim()}
                 >
                   <Plus className="size-3.5" />
@@ -356,7 +356,7 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
                   className="h-8 text-sm"
                   autoFocus
                 />
-                <Button type="button" variant="outline" size="sm" onClick={createApp} disabled={!newAppName.trim()}>
+                <Button type="button" variant="outline" size="sm" onClick={() => void createApp()} disabled={!newAppName.trim()}>
                   <Plus className="size-3.5" />
                 </Button>
               </div>
@@ -525,9 +525,9 @@ function PhonePicker({
   const [adding, setAdding] = useState(false);
   const [newLabel, setNewLabel] = useState("");
 
-  const create = () => {
+  const create = async () => {
     if (!newLabel.trim()) return;
-    const id = addPhoneNumber({ label: newLabel.trim() });
+    const id = await addPhoneNumber({ label: newLabel.trim() });
     onChange(id);
     setNewLabel("");
     setAdding(false);
@@ -565,7 +565,7 @@ function PhonePicker({
             inputMode="tel"
             autoFocus
           />
-          <Button type="button" variant="outline" size="sm" onClick={create} disabled={!newLabel.trim()}>
+          <Button type="button" variant="outline" size="sm" onClick={() => void create()} disabled={!newLabel.trim()}>
             <Plus className="size-3.5" />
           </Button>
         </div>
@@ -612,4 +612,3 @@ function Section({
 function Req() {
   return <span className="text-destructive">*</span>;
 }
-

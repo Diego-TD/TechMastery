@@ -40,8 +40,8 @@ export function DeviceDetailPanel({ deviceId, open, onOpenChange }: Props) {
       {editing ? (
         <DeviceForm
           initial={device}
-          onSubmit={(input) => {
-            updateDevice(device.id, input);
+          onSubmit={async (input) => {
+            await updateDevice(device.id, input);
             setEditing(false);
             toast.success(t(($) => $.toasts.deviceUpdated));
           }}

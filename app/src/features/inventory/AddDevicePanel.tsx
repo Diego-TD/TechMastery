@@ -13,8 +13,8 @@ export function AddDevicePanel({ open, onOpenChange }: Props) {
   return (
     <ResponsivePanel open={open} onOpenChange={onOpenChange} title={t(($) => $.deviceForm.addTitle)}>
       <DeviceForm
-        onSubmit={(input) => {
-          addDevice(input);
+        onSubmit={async (input) => {
+          await addDevice(input);
           onOpenChange(false);
           toast.success(t(($) => $.toasts.deviceAdded));
         }}

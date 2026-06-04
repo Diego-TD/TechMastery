@@ -52,18 +52,18 @@ export function EntityDetailPanel({
     : authenticatorAppUsage(accounts, entity.id);
   const canDelete = dependents.length === 0;
 
-  const save = () => {
+  const save = async () => {
     if (!name.trim()) return;
-    if (isPhone) updatePhoneNumber(entity.id, { label: name.trim() });
-    else updateAuthenticatorApp(entity.id, { name: name.trim() });
+    if (isPhone) await updatePhoneNumber(entity.id, { label: name.trim() });
+    else await updateAuthenticatorApp(entity.id, { name: name.trim() });
     onOpenChange(false);
     toast.success(t(($) => $.toasts.saved));
   };
 
-  const remove = () => {
+  const remove = async () => {
     if (!canDelete) return;
-    if (isPhone) deletePhoneNumber(entity.id);
-    else deleteAuthenticatorApp(entity.id);
+    if (isPhone) await deletePhoneNumber(entity.id);
+    else await deleteAuthenticatorApp(entity.id);
     onOpenChange(false);
     toast.success(t(($) => $.toasts.deleted));
   };
@@ -94,12 +94,12 @@ export function EntityDetailPanel({
         )}
 
         <div className="flex gap-2">
-          <Button className="flex-1" onClick={save} disabled={!name.trim()}>
+          <Button className="flex-1" onClick={() => void save()} disabled={!name.trim()}>
             {t(($) => $.common.save)}
           </Button>
           <Button
             variant="outline"
-            onClick={remove}
+            onClick={() => void remove()}
             disabled={!canDelete}
             title={canDelete ? undefined : t(($) => $.inventory.cannotDelete)}
           >
