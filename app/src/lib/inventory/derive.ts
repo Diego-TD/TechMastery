@@ -4,6 +4,7 @@ import type {
   AuthenticatorApp,
   Device,
   MapData,
+  PhoneNumber,
   Readiness,
   ReadinessCategory,
   RecommendedAction,
@@ -20,6 +21,7 @@ export type GraphNode =
   | { id: string; kind: "account"; account: Account }
   | { id: string; kind: "device"; device: Device }
   | { id: string; kind: "authenticator"; app: AuthenticatorApp }
+  | { id: string; kind: "phone"; phone: PhoneNumber }
   | { id: string; kind: "recovery"; label: string };
 
 /** Three relationships only — see the legend. */
@@ -40,10 +42,17 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
   const appsById = new Map(data.authenticatorApps.map((a) => [a.id, a]));
   const phonesById = new Map(data.phoneNumbers.map((p) => [p.id, p]));
 
+  const referencesPhone = (account: Account) =>
+    Boolean(
+      account.identifierPhoneId ||
+        account.recoveryOptions.some((recovery) => recovery.type === "phone" && recovery.phoneId),
+    );
   const rootAccounts =
     lifeArea === undefined
       ? data.accounts
-      : data.accounts.filter((a) => a.lifeArea === lifeArea);
+      : lifeArea === "phone"
+        ? data.accounts.filter((a) => a.lifeArea === lifeArea || referencesPhone(a))
+        : data.accounts.filter((a) => a.lifeArea === lifeArea);
 
   const nodes = new Map<string, GraphNode>();
   const edges: GraphEdge[] = [];
@@ -71,7 +80,7 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
   const ensurePhone = (phoneId: string) => {
     const phone = phonesById.get(phoneId);
     if (phone && !nodes.has(phoneId)) {
-      nodes.set(phoneId, { id: phoneId, kind: "recovery", label: phone.label });
+      nodes.set(phoneId, { id: phoneId, kind: "phone", phone });
     }
     return phoneId;
   };
@@ -94,6 +103,10 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
       if (appsById.has(acc.authenticatorAppId)) pushEdge(acc.id, acc.authenticatorAppId, "depends_on");
     }
 
+    if (acc.identifierPhoneId && phonesById.has(acc.identifierPhoneId)) {
+      pushEdge(acc.id, ensurePhone(acc.identifierPhoneId), "depends_on");
+    }
+
     for (const r of acc.recoveryOptions) {
       if (r.type === "email" && r.targetAccountId && r.targetAccountId !== acc.id) {
         ensureAccount(r.targetAccountId);
@@ -102,6 +115,10 @@ export function buildGraph(data: MapData, lifeArea?: LifeArea): GraphModel {
         pushEdge(acc.id, ensurePhone(r.phoneId), "recovers");
       }
     }
+  }
+
+  if (lifeArea === "phone") {
+    for (const phone of data.phoneNumbers) ensurePhone(phone.id);
   }
 
   return { nodes: [...nodes.values()], edges };

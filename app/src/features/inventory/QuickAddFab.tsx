@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Boxes, KeyRound, Plus } from "lucide-react";
+import { Boxes, KeyRound, Plus, ShieldCheck, Smartphone } from "lucide-react";
 import { AddAccountPanel } from "./AddAccountPanel";
+import { AddAuthenticatorAppPanel } from "./AddAuthenticatorAppPanel";
 import { AddDevicePanel } from "./AddDevicePanel";
+import { AddPhoneNumberPanel } from "./AddPhoneNumberPanel";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +21,8 @@ export function QuickAddFab() {
   const { t } = useTranslation();
   const [addingAccount, setAddingAccount] = useState(false);
   const [addingDevice, setAddingDevice] = useState(false);
+  const [addingAuthApp, setAddingAuthApp] = useState(false);
+  const [addingPhone, setAddingPhone] = useState(false);
 
   return (
     <>
@@ -41,11 +45,21 @@ export function QuickAddFab() {
             <Boxes className="size-4" />
             {t(($) => $.inventory.addDevice)}
           </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setAddingAuthApp(true)}>
+            <ShieldCheck className="size-4" />
+            {t(($) => $.inventory.addAuthenticatorApp)}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setAddingPhone(true)}>
+            <Smartphone className="size-4" />
+            {t(($) => $.inventory.addPhoneNumber)}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <AddAccountPanel open={addingAccount} onOpenChange={setAddingAccount} />
       <AddDevicePanel open={addingDevice} onOpenChange={setAddingDevice} />
+      <AddAuthenticatorAppPanel open={addingAuthApp} onOpenChange={setAddingAuthApp} />
+      <AddPhoneNumberPanel open={addingPhone} onOpenChange={setAddingPhone} />
     </>
   );
 }

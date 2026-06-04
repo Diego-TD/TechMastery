@@ -1,6 +1,6 @@
 import type { DeviceKind, LifeArea } from "@shared/enums";
-import type { Importance } from "@/lib/mock/types";
-import type { GraphEdgeKind } from "@/lib/mock/derive";
+import type { Importance } from "@/lib/inventory/types";
+import type { GraphEdgeKind } from "@/lib/inventory/derive";
 import {
   AtSign,
   Banknote,

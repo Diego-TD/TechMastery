@@ -11,11 +11,11 @@ import {
   type Edge,
   type Node,
 } from "@xyflow/react";
-import { Plus, ShieldCheck } from "lucide-react";
+import { Plus, ShieldCheck, Smartphone } from "lucide-react";
 import type { LifeArea } from "@shared/enums";
 import { LIFE_AREAS } from "@shared/enums";
-import { useGraph } from "@/lib/mock/store";
-import type { GraphEdge, GraphNode } from "@/lib/mock/derive";
+import { useGraph } from "@/lib/inventory/store";
+import type { GraphEdge, GraphNode } from "@/lib/inventory/derive";
 import {
   DEVICE_ICON,
   EDGE_KINDS,
@@ -91,6 +91,14 @@ function toRFNode(
       label: n.app.name,
       iconName: "authenticator",
       Icon: ShieldCheck,
+    };
+  } else if (n.kind === "phone") {
+    data = {
+      kind: "phone",
+      label: n.phone.label,
+      sublabel: t(($) => $.lifeAreas.phone),
+      iconName: "phone",
+      Icon: Smartphone,
     };
   } else {
     data = {

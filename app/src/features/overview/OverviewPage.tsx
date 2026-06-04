@@ -13,7 +13,7 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { useInventory, useReadiness } from "@/lib/mock/store";
+import { useInventory, useReadiness } from "@/lib/inventory/store";
 import { readinessLevel, scoreColor } from "@/features/shared/display";
 import { AddAccountPanel } from "@/features/inventory/AddAccountPanel";
 import { TargetDetail } from "@/features/inventory/TargetDetail";

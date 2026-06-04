@@ -21,9 +21,9 @@ import type {
   TwoFactorStatus,
 } from "@shared/enums";
 import { LIFE_AREAS } from "@shared/enums";
-import type { Account, Device, Importance, RecoveryOption } from "@/lib/mock/types";
-import type { NewAccountInput } from "@/lib/mock/store";
-import { useInventory } from "@/lib/mock/store";
+import type { Account, Device, Importance, RecoveryOption } from "@/lib/inventory/types";
+import type { NewAccountInput } from "@/lib/inventory/store";
+import { useInventory } from "@/lib/inventory/store";
 import {
   IDENTIFIER_TYPES,
   IMPORTANCES,
@@ -115,6 +115,8 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
   const [deviceIds, setDeviceIds] = useState<string[]>(initial?.deviceIds ?? []);
 
   const [hasBackupCodes, setHasBackupCodes] = useState(initial?.hasBackupCodes ?? false);
+  const backupCodesRelevant =
+    usesAuthApp || mfaMethods.includes("security_key") || hasBackupCodes;
   const [backupCodesLocation, setBackupCodesLocation] = useState(initial?.backupCodesLocation ?? "");
   const [keyFileLabel, setKeyFileLabel] = useState(initial?.keyFile?.label ?? "");
   const [keyFileLocation, setKeyFileLocation] = useState(initial?.keyFile?.location ?? "");
@@ -159,8 +161,9 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
         phoneId: r.type === "phone" ? r.phoneId : undefined,
       })),
       deviceIds,
-      hasBackupCodes,
-      backupCodesLocation: hasBackupCodes ? backupCodesLocation.trim() || undefined : undefined,
+      hasBackupCodes: backupCodesRelevant && hasBackupCodes,
+      backupCodesLocation:
+        backupCodesRelevant && hasBackupCodes ? backupCodesLocation.trim() || undefined : undefined,
       keyFile: keyFileLabel.trim()
         ? { label: keyFileLabel.trim(), location: keyFileLocation.trim() || undefined }
         : undefined,
@@ -449,22 +452,30 @@ export function AccountForm({ accounts, devices, initial, lockedLifeArea, onSubm
 
       {/* Backup & files */}
       <Section icon={KeyRound} title={t(($) => $.accountForm.sectionBackup)} optional>
-        <div className="flex items-center justify-between rounded-md border p-3">
-          <Label htmlFor="backup-switch" className="font-normal">
-            {t(($) => $.accountForm.hasBackupCodes)}
-          </Label>
-          <Switch id="backup-switch" checked={hasBackupCodes} onCheckedChange={setHasBackupCodes} />
-        </div>
-        {hasBackupCodes && (
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-xs">{t(($) => $.accountForm.backupCodesLocation)}</Label>
-            <p className="text-xs text-muted-foreground">{t(($) => $.accountForm.backupCodesHint)}</p>
-            <Input
-              value={backupCodesLocation}
-              onChange={(e) => setBackupCodesLocation(e.target.value)}
-              placeholder={t(($) => $.accountForm.backupCodesPlaceholder)}
-            />
-          </div>
+        {backupCodesRelevant ? (
+          <>
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <Label htmlFor="backup-switch" className="font-normal">
+                {t(($) => $.accountForm.hasBackupCodes)}
+              </Label>
+              <Switch id="backup-switch" checked={hasBackupCodes} onCheckedChange={setHasBackupCodes} />
+            </div>
+            {hasBackupCodes && (
+              <div className="flex flex-col gap-1.5">
+                <Label className="text-xs">{t(($) => $.accountForm.backupCodesLocation)}</Label>
+                <p className="text-xs text-muted-foreground">{t(($) => $.accountForm.backupCodesHint)}</p>
+                <Input
+                  value={backupCodesLocation}
+                  onChange={(e) => setBackupCodesLocation(e.target.value)}
+                  placeholder={t(($) => $.accountForm.backupCodesPlaceholder)}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="rounded-md border bg-muted/30 p-3 text-xs text-muted-foreground">
+            {t(($) => $.accountForm.backupCodesNotRelevant)}
+          </p>
         )}
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs">{t(($) => $.accountForm.keyFileLabel)}</Label>

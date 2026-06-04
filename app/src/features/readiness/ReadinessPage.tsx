@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { useInventory, useReadiness } from "@/lib/mock/store";
-import type { ReadinessCategory, RecommendedAction } from "@/lib/mock/types";
+import { useInventory, useReadiness } from "@/lib/inventory/store";
+import type { ReadinessCategory, RecommendedAction } from "@/lib/inventory/types";
 import { readinessLevel, scoreColor } from "@/features/shared/display";
 import { TargetDetail } from "@/features/inventory/TargetDetail";
 import { Badge } from "@/components/ui/badge";

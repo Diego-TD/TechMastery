@@ -3,7 +3,7 @@ import { AlertTriangle, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type MapNodeData = {
-  kind: "account" | "device" | "recovery" | "authenticator";
+  kind: "account" | "device" | "recovery" | "authenticator" | "phone";
   label: string;
   sublabel?: string;
   iconName: string;
@@ -18,6 +18,7 @@ const TONE: Record<MapNodeData["kind"], string> = {
   device: "bg-muted/60 border-border",
   recovery: "bg-primary/5 border-primary/30",
   authenticator: "bg-amber-500/5 border-amber-500/30",
+  phone: "bg-primary/5 border-primary/30",
 };
 
 /**
@@ -40,7 +41,7 @@ export function MapNode({ data }: NodeProps) {
       <div
         className={cn(
           "flex size-8 shrink-0 items-center justify-center rounded-md",
-          d.kind === "recovery"
+          d.kind === "recovery" || d.kind === "phone"
             ? "bg-primary/10 text-primary"
             : d.kind === "authenticator"
               ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"

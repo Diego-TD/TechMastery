@@ -1,4 +1,4 @@
-import type { Account, AuthenticatorApp, Device, MapData } from "./types";
+import type { Account, AuthenticatorApp, Device, MapData } from "../inventory/types";
 
 /**
  * Seeded sample map for an Ensenada CS student. Designed to surface teachable

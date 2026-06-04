@@ -8,9 +8,8 @@ import {
   Smartphone,
   type LucideIcon,
 } from "lucide-react";
-import type { SimulationKind } from "@/lib/mock/types";
-import { useInventory, useSimulation } from "@/lib/mock/store";
-import { topHub } from "@/lib/mock/derive";
+import type { SimulationKind } from "@/lib/inventory/types";
+import { useInventory, useSimulation } from "@/lib/inventory/store";
 import { SEVERITY_CLASS, type Severity } from "@/features/shared/display";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,13 +30,10 @@ export function SimulationsPage() {
   const { accounts, devices, phoneNumbers } = useInventory();
   const [scenario, setScenario] = useState<SimulationScenario | null>(null);
 
-  const hub = topHub(accounts);
-  const hubAccount = hub ? accounts.find((a) => a.id === hub.id) : undefined;
   const passwordManager = accounts.find((a) => a.isPasswordManager);
-  const scenarioDevices = devices.filter((d) => ["phone", "laptop", "desktop"].includes(d.kind));
-  const deviceTargets = (scenarioDevices.length > 0 ? scenarioDevices : devices).slice(0, 2);
+  const emailAccounts = accounts.filter((account) => account.lifeArea === "email");
   const scenarios: SimulationScenario[] = [
-    ...deviceTargets.map((device) => ({
+    ...devices.map((device) => ({
       id: `device-${device.id}`,
       kind: "lose_device" as const,
       targetId: device.id,
@@ -53,18 +49,14 @@ export function SimulationsPage() {
       question: t(($) => $.sim.scenarios.lose_phone_number.question, { name: phone.label }),
       Icon: Smartphone,
     })),
-    ...(hubAccount
-      ? [
-          {
-            id: `email-${hubAccount.id}`,
-            kind: "email_locked" as const,
-            targetId: hubAccount.id,
-            title: t(($) => $.sim.scenarios.email_locked.title, { name: hubAccount.name }),
-            question: t(($) => $.sim.scenarios.email_locked.question, { name: hubAccount.name }),
-            Icon: MailX,
-          },
-        ]
-      : []),
+    ...emailAccounts.map((account) => ({
+      id: `email-${account.id}`,
+      kind: "email_locked" as const,
+      targetId: account.id,
+      title: t(($) => $.sim.scenarios.email_locked.title, { name: account.name }),
+      question: t(($) => $.sim.scenarios.email_locked.question, { name: account.name }),
+      Icon: MailX,
+    })),
     ...(passwordManager
       ? [
           {

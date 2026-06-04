@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Link2, Phone, Plus, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Link2, Phone, Plus, ShieldCheck, type LucideIcon } from "lucide-react";
 import { LIFE_AREAS } from "@shared/enums";
-import { useInventory, useReadiness } from "@/lib/mock/store";
-import { dependencyFanIn } from "@/lib/mock/derive";
+import { useInventory, useReadiness } from "@/lib/inventory/store";
+import { dependencyFanIn } from "@/lib/inventory/derive";
 import { EntityDetailPanel, type EntityRef } from "./EntityDetailPanel";
-import type { Account, Device } from "@/lib/mock/types";
+import type { Account, Device } from "@/lib/inventory/types";
 import {
   DEVICE_ICON,
   IMPORTANCE_BADGE,
@@ -69,13 +69,25 @@ export function InventoryPage() {
     const q = query.trim().toLowerCase();
     return devices.filter((d) => q === "" || d.name.toLowerCase().includes(q));
   }, [devices, query]);
+  const filteredAuthenticatorApps = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return authenticatorApps.filter((app) => q === "" || app.name.toLowerCase().includes(q));
+  }, [authenticatorApps, query]);
+  const filteredPhoneNumbers = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return phoneNumbers.filter((phone) => q === "" || phone.label.toLowerCase().includes(q));
+  }, [phoneNumbers, query]);
 
   const showAccounts = tab !== "devices";
   // Devices have no life area, so hide them when filtering by one.
   const showDevices = tab !== "accounts" && area === ALL;
+  const showAuthenticatorApps = tab === "all" && area === ALL;
+  const showPhoneNumbers = tab === "all" && (area === ALL || area === "phone");
   const isEmpty =
     (!showAccounts || filteredAccounts.length === 0) &&
-    (!showDevices || filteredDevices.length === 0);
+    (!showDevices || filteredDevices.length === 0) &&
+    (!showAuthenticatorApps || filteredAuthenticatorApps.length === 0) &&
+    (!showPhoneNumbers || filteredPhoneNumbers.length === 0);
 
   const openDetail = (id: string) => {
     setDetailId(id);
@@ -152,10 +164,10 @@ export function InventoryPage() {
             ))}
 
           {/* Phone numbers + authenticator apps are linkable entities too. */}
-          {tab === "all" && area === ALL && authenticatorApps.length > 0 && (
+          {showAuthenticatorApps && filteredAuthenticatorApps.length > 0 && (
             <>
               <GroupLabel>{t(($) => $.inventory.authAppsTitle)}</GroupLabel>
-              {authenticatorApps.map((app) => (
+              {filteredAuthenticatorApps.map((app) => (
                 <EntityCard
                   key={app.id}
                   icon={ShieldCheck}
@@ -165,10 +177,10 @@ export function InventoryPage() {
               ))}
             </>
           )}
-          {tab === "all" && area === ALL && phoneNumbers.length > 0 && (
+          {showPhoneNumbers && filteredPhoneNumbers.length > 0 && (
             <>
               <GroupLabel>{t(($) => $.inventory.phonesTitle)}</GroupLabel>
-              {phoneNumbers.map((p) => (
+              {filteredPhoneNumbers.map((p) => (
                 <EntityCard
                   key={p.id}
                   icon={Phone}
@@ -269,7 +281,7 @@ function EntityCard({
   name,
   onClick,
 }: {
-  icon: typeof ShieldCheck;
+  icon: LucideIcon;
   name: string;
   onClick: () => void;
 }) {

@@ -5,7 +5,7 @@ import type {
   RecoveryMethodType,
   TwoFactorStatus,
 } from "@shared/enums";
-import type { DeviceLock, Importance } from "@/lib/mock/types";
+import type { DeviceLock, Importance } from "@/lib/inventory/types";
 
 export const IDENTIFIER_TYPES: readonly IdentifierType[] = [
   "email",

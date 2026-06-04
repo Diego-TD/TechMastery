@@ -16,7 +16,7 @@ import {
 import type { LifeArea } from "@shared/enums";
 import { LIFE_AREAS } from "@shared/enums";
 import { api } from "../../convex/_generated/api";
-import { useInventory } from "@/lib/mock/store";
+import { useInventory } from "@/lib/inventory/store";
 import { AccountForm } from "@/features/inventory/AccountForm";
 import { LIFE_AREA_ICON } from "@/features/shared/display";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";

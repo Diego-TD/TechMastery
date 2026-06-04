@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components --
- * This module remains the single frontend data seam. It used to hold the
- * in-memory prototype store; it now adapts Convex queries/mutations to the same
- * component-facing hooks so the feature screens can stay focused on UI.
+ * This module is the single frontend inventory data seam. It adapts Convex
+ * queries/mutations to component-facing hooks so feature screens stay focused
+ * on UI.
  */
 import { useMemo, type ReactNode } from "react";
 import { useMutation, useQuery } from "convex/react";

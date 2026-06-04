@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
-import { useDeviceById, useInventory } from "@/lib/mock/store";
+import { useDeviceById, useInventory } from "@/lib/inventory/store";
 import { DEVICE_ICON } from "@/features/shared/display";
 import { ResponsivePanel } from "@/features/shared/ResponsivePanel";
 import { DeviceForm } from "./DeviceForm";

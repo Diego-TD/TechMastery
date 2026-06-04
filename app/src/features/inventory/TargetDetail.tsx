@@ -1,4 +1,4 @@
-import { useInventory } from "@/lib/mock/store";
+import { useInventory } from "@/lib/inventory/store";
 import { AccountDetailPanel } from "./AccountDetailPanel";
 import { DeviceDetailPanel } from "./DeviceDetailPanel";
 

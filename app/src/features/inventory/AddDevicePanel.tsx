@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { useInventory } from "@/lib/mock/store";
+import { useInventory } from "@/lib/inventory/store";
 import { ResponsivePanel } from "@/features/shared/ResponsivePanel";
 import { DeviceForm } from "./DeviceForm";
 

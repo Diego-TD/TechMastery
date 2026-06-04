@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DeviceKind } from "@shared/enums";
-import type { Device, DeviceLock } from "@/lib/mock/types";
+import type { Device, DeviceLock } from "@/lib/inventory/types";
 import { DEVICE_KINDS, DEVICE_LOCKS } from "@/features/shared/options";
 import { ChipChoice } from "@/features/shared/ChipChoice";
 import { Button } from "@/components/ui/button";
