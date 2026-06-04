@@ -7,6 +7,7 @@ import {
   importance,
   lifeArea,
   loginMethod,
+  onboardingGoal,
   recoveryMethodType,
   twoFactorStatus,
   userStatus,
@@ -17,6 +18,7 @@ export default defineSchema({
     tokenIdentifier: v.string(),
     email: v.string(),
     status: userStatus,
+    onboardingGoal: v.optional(onboardingGoal),
     updatedAt: v.number(),
   }).index("by_tokenIdentifier", ["tokenIdentifier"]),
 

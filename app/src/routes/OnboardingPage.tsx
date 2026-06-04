@@ -13,7 +13,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import type { LifeArea } from "@shared/enums";
+import type { LifeArea, OnboardingGoal } from "@shared/enums";
 import { LIFE_AREAS } from "@shared/enums";
 import { api } from "../../convex/_generated/api";
 import { useInventory } from "@/lib/inventory/store";
@@ -24,14 +24,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-type GoalKey =
-  | "organize"
-  | "prepare_device_loss"
-  | "improve_security"
-  | "understand_footprint"
-  | "workshop";
-
-const GOALS: { key: GoalKey; Icon: LucideIcon }[] = [
+const GOALS: { key: OnboardingGoal; Icon: LucideIcon }[] = [
   { key: "organize", Icon: Boxes },
   { key: "prepare_device_loss", Icon: ShieldAlert },
   { key: "improve_security", Icon: ShieldCheck },
@@ -50,14 +43,14 @@ export function OnboardingPage() {
   const { accounts, devices, addAccount } = useInventory();
 
   const [step, setStep] = useState<Step>("goal");
-  const [, setGoal] = useState<GoalKey | null>(null);
+  const [goal, setGoal] = useState<OnboardingGoal | null>(null);
   const [area, setArea] = useState<LifeArea>("social");
   const [finishing, setFinishing] = useState(false);
 
   const complete = async (to: string) => {
     setFinishing(true);
     try {
-      await completeOnboarding({});
+      await completeOnboarding({ goal: goal ?? undefined });
       await navigate(to);
     } finally {
       setFinishing(false);

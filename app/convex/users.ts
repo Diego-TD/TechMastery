@@ -1,8 +1,8 @@
 import { mutation, query } from "./_generated/server";
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { getCurrentUserOrThrow, userByTokenIdentifier } from "./lib/users";
 import type { Doc } from "./_generated/dataModel";
-import { UserStatus } from "../shared/enums";
+import { onboardingGoal, UserStatus } from "../shared/enums";
 
 const DEFAULT_USER_STATUS: UserStatus = "NEEDS_ONBOARDING";
 
@@ -15,14 +15,17 @@ export const me = query({
 });
 
 export const completeOnboarding = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: { goal: v.optional(onboardingGoal) },
+  handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
-    if (user.status !== "ONBOARDED") {
-      await ctx.db.patch("users", user._id, {
+    const shouldSaveGoal = args.goal !== undefined && args.goal !== user.onboardingGoal;
+    if (user.status !== "ONBOARDED" || shouldSaveGoal) {
+      const patch: Partial<Doc<"users">> = {
         status: "ONBOARDED",
         updatedAt: Date.now(),
-      });
+      };
+      if (shouldSaveGoal) patch.onboardingGoal = args.goal;
+      await ctx.db.patch("users", user._id, patch);
     }
     return user._id;
   },

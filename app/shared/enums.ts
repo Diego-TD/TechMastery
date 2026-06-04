@@ -3,6 +3,15 @@ import { v, type Infer } from "convex/values";
 export const userStatus = v.union(v.literal("NEEDS_ONBOARDING"), v.literal("ONBOARDED"));
 export type UserStatus = Infer<typeof userStatus>;
 
+export const onboardingGoal = v.union(
+  v.literal("organize"),
+  v.literal("prepare_device_loss"),
+  v.literal("improve_security"),
+  v.literal("understand_footprint"),
+  v.literal("workshop"),
+);
+export type OnboardingGoal = Infer<typeof onboardingGoal>;
+
 /**
  * Shared domain enums for the account/device map. These live in `shared/` so
  * Convex validators and the React app stay in sync once the backend is wired;

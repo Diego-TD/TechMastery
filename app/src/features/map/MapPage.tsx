@@ -144,10 +144,27 @@ export function MapPage() {
 
   const { nodes, edges } = useMemo(() => {
     const rfNodes = graph.nodes.map((n) => toRFNode(n, t));
-    // Web (Obsidian-like) uses straight diagonal links; Tree uses orthogonal.
+    const pairCounts = graph.edges.reduce((counts, edge) => {
+      const key = `${edge.source}->${edge.target}`;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>());
+    // Web (Obsidian-like) uses diagonal links; Tree uses mostly orthogonal.
     const rfEdges = graph.edges.map((e) => ({
       ...toRFEdge(e),
-      type: view === "web" ? "straight" : "smoothstep",
+      type:
+        view === "web"
+          ? pairCounts.get(`${e.source}->${e.target}`)! > 1
+            ? "bezier"
+            : "straight"
+          : pairCounts.get(`${e.source}->${e.target}`)! > 1 && e.kind === "recovers"
+            ? "step"
+            : "smoothstep",
+      label: pairCounts.get(`${e.source}->${e.target}`)! > 1 ? t(($) => $.map.edges[e.kind]) : undefined,
+      labelBgPadding: [6, 3] as [number, number],
+      labelBgBorderRadius: 4,
+      labelBgStyle: { fill: "var(--background)", fillOpacity: 0.88 },
+      labelStyle: { fill: "var(--muted-foreground)", fontSize: 11 },
     }));
     const laidOut =
       view === "web"

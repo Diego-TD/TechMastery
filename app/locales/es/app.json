@@ -187,7 +187,13 @@
     "addAuthenticatorApp": "Agregar app de autenticación",
     "addPhoneNumber": "Agregar número de teléfono",
     "search": "Buscar…",
-    "tabs": { "all": "Todo", "accounts": "Cuentas", "devices": "Dispositivos" },
+    "tabs": {
+      "all": "Todo",
+      "accounts": "Cuentas",
+      "devices": "Dispositivos",
+      "authApps": "Apps auth",
+      "phones": "Teléfonos"
+    },
     "filterArea": "Área de vida",
     "usedOn": "Se usa en",
     "recoversVia": "Recuperación",
@@ -317,6 +323,9 @@
     "subtitle": "Imagina el peor caso antes de que pase. \"¿Qué se rompe si…?\"",
     "pickScenario": "Elige un escenario",
     "runAgain": "Probar otro escenario",
+    "emptyTitle": "Agrega algunas entidades para simular",
+    "emptyDesc": "Agrega una cuenta de correo, número de teléfono o dispositivo para ver qué se rompería.",
+    "emptyCta": "Ir al inventario",
     "scenarios": {
       "lose_device": { "title": "Pierdo {{name}}", "question": "¿Qué se rompe si pierdo {{name}}?" },
       "lose_phone_number": { "title": "Pierdo {{name}}", "question": "¿Qué se rompe si {{name}} deja de recibir códigos?" },

@@ -34,8 +34,8 @@ function accountInput(overrides: {
     lifeArea: "email" as const,
     importance: "high" as const,
     identifierType: "email" as const,
-    loginMethods: ["password"] as const,
-    mfaMethods: overrides.authAppId ? (["authenticator_app"] as const) : (["unknown"] as const),
+    loginMethods: ["password" as const],
+    mfaMethods: overrides.authAppId ? ["authenticator_app" as const] : ["unknown" as const],
     authenticatorAppId: overrides.authAppId,
     recoveryOptions: overrides.phoneId
       ? [{ id: "r1", type: "phone" as const, phoneId: overrides.phoneId }]

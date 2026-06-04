@@ -187,7 +187,13 @@
     "addAuthenticatorApp": "Add authenticator app",
     "addPhoneNumber": "Add phone number",
     "search": "Search…",
-    "tabs": { "all": "All", "accounts": "Accounts", "devices": "Devices" },
+    "tabs": {
+      "all": "All",
+      "accounts": "Accounts",
+      "devices": "Devices",
+      "authApps": "Auth apps",
+      "phones": "Phones"
+    },
     "filterArea": "Life area",
     "usedOn": "Used on",
     "recoversVia": "Recovery",
@@ -317,6 +323,9 @@
     "subtitle": "Play out a worst case before it happens. \"What breaks if…\"",
     "pickScenario": "Pick a scenario",
     "runAgain": "Try another scenario",
+    "emptyTitle": "Add a few entities to simulate",
+    "emptyDesc": "Add an email account, phone number, or device so TechMastery can show what would break.",
+    "emptyCta": "Go to inventory",
     "scenarios": {
       "lose_device": { "title": "Lose {{name}}", "question": "What breaks if {{name}} is gone?" },
       "lose_phone_number": { "title": "Lose {{name}}", "question": "What breaks if {{name}} stops receiving codes?" },

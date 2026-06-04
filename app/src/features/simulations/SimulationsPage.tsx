@@ -5,14 +5,24 @@ import {
   KeyRound,
   Laptop,
   MailX,
+  Plus,
   Smartphone,
   type LucideIcon,
 } from "lucide-react";
+import { Link } from "react-router";
 import type { SimulationKind } from "@/lib/inventory/types";
 import { useInventory, useSimulation } from "@/lib/inventory/store";
 import { SEVERITY_CLASS, type Severity } from "@/features/shared/display";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 const SEVERITY_ORDER: Record<Severity, number> = { blocked: 0, at_risk: 1, ok: 2 };
 
@@ -32,6 +42,7 @@ export function SimulationsPage() {
 
   const passwordManager = accounts.find((a) => a.isPasswordManager);
   const emailAccounts = accounts.filter((account) => account.lifeArea === "email");
+  const hasPaymentAccounts = accounts.some((account) => account.lifeArea === "banking" || account.lifeArea === "shopping");
   const scenarios: SimulationScenario[] = [
     ...devices.map((device) => ({
       id: `device-${device.id}`,
@@ -73,13 +84,17 @@ export function SimulationsPage() {
           },
         ]
       : []),
-    {
-      id: "card-stolen",
-      kind: "card_stolen",
-      title: t(($) => $.sim.scenarios.card_stolen.title),
-      question: t(($) => $.sim.scenarios.card_stolen.question),
-      Icon: CreditCard,
-    },
+    ...(hasPaymentAccounts
+      ? [
+          {
+            id: "card-stolen",
+            kind: "card_stolen" as const,
+            title: t(($) => $.sim.scenarios.card_stolen.title),
+            question: t(($) => $.sim.scenarios.card_stolen.question),
+            Icon: CreditCard,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -90,33 +105,50 @@ export function SimulationsPage() {
       </header>
 
       {scenario === null ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {scenarios.map((nextScenario) => {
-            const { id, title, question, Icon } = nextScenario;
-            return (
-              <Card
-                key={id}
-                role="button"
-                tabIndex={0}
-                onClick={() => setScenario(nextScenario)}
-                onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") && setScenario(nextScenario)
-                }
-                className="cursor-pointer gap-0 p-4 transition-colors hover:bg-muted/50"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <Icon className="size-5 text-muted-foreground" />
+        scenarios.length > 0 ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {scenarios.map((nextScenario) => {
+              const { id, title, question, Icon } = nextScenario;
+              return (
+                <Card
+                  key={id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setScenario(nextScenario)}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") && setScenario(nextScenario)
+                  }
+                  className="cursor-pointer gap-0 p-4 transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                      <Icon className="size-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">{title}</div>
+                      <div className="text-xs text-muted-foreground">{question}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium">{title}</div>
-                    <div className="text-xs text-muted-foreground">{question}</div>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <Empty className="border border-dashed">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Plus className="size-6" />
+              </EmptyMedia>
+              <EmptyTitle>{t(($) => $.sim.emptyTitle)}</EmptyTitle>
+              <EmptyDescription>{t(($) => $.sim.emptyDesc)}</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild>
+                <Link to="/app/inventory">{t(($) => $.sim.emptyCta)}</Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        )
       ) : (
         <SimulationResultView scenario={scenario} onBack={() => setScenario(null)} />
       )}

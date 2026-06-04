@@ -36,7 +36,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ALL = "__all__";
-type TypeTab = "all" | "accounts" | "devices";
+type TypeTab = "all" | "accounts" | "devices" | "authApps" | "phones";
 
 export function InventoryPage() {
   const { t } = useTranslation();
@@ -78,11 +78,11 @@ export function InventoryPage() {
     return phoneNumbers.filter((phone) => q === "" || phone.label.toLowerCase().includes(q));
   }, [phoneNumbers, query]);
 
-  const showAccounts = tab !== "devices";
+  const showAccounts = tab === "all" || tab === "accounts";
   // Devices have no life area, so hide them when filtering by one.
-  const showDevices = tab !== "accounts" && area === ALL;
-  const showAuthenticatorApps = tab === "all" && area === ALL;
-  const showPhoneNumbers = tab === "all" && (area === ALL || area === "phone");
+  const showDevices = (tab === "all" || tab === "devices") && area === ALL;
+  const showAuthenticatorApps = tab === "authApps" || (tab === "all" && area === ALL);
+  const showPhoneNumbers = tab === "phones" || (tab === "all" && (area === ALL || area === "phone"));
   const isEmpty =
     (!showAccounts || filteredAccounts.length === 0) &&
     (!showDevices || filteredDevices.length === 0) &&
@@ -102,10 +102,12 @@ export function InventoryPage() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Tabs value={tab} onValueChange={(v) => setTab(v as TypeTab)} className="w-full sm:w-auto">
-          <TabsList>
+          <TabsList className="h-auto flex-wrap">
             <TabsTrigger value="all">{t(($) => $.inventory.tabs.all)}</TabsTrigger>
             <TabsTrigger value="accounts">{t(($) => $.inventory.tabs.accounts)}</TabsTrigger>
             <TabsTrigger value="devices">{t(($) => $.inventory.tabs.devices)}</TabsTrigger>
+            <TabsTrigger value="authApps">{t(($) => $.inventory.tabs.authApps)}</TabsTrigger>
+            <TabsTrigger value="phones">{t(($) => $.inventory.tabs.phones)}</TabsTrigger>
           </TabsList>
         </Tabs>
         <div className="flex flex-1 gap-2">
@@ -115,7 +117,7 @@ export function InventoryPage() {
             placeholder={t(($) => $.inventory.search)}
             className="flex-1"
           />
-          {tab !== "devices" && (
+          {(tab === "all" || tab === "accounts") && (
             <Select value={area} onValueChange={setArea}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue />
