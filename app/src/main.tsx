@@ -11,6 +11,7 @@ import { LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import { AppRoutes } from "./routes/AppRoutes.tsx";
 import { ErrorBoundary } from "./ErrorBoundary.tsx";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
+import { MockDataProvider } from "@/lib/mock/store";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -28,7 +29,9 @@ createRoot(document.getElementById("root")!).render(
         >
           <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
             <BrowserRouter>
-              <AppRoutes />
+              <MockDataProvider>
+                <AppRoutes />
+              </MockDataProvider>
             </BrowserRouter>
           </ConvexProviderWithClerk>
         </ClerkProvider>

@@ -15,20 +15,274 @@
     "valueProp": "Keep your accounts, devices, and readiness in one calm place — and build real confidence with the tech you rely on.",
     "signInHint": "Already have an account?"
   },
+  "common": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "optional": "optional",
+    "unknown": "Unknown",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No"
+  },
   "onboarding": {
     "title": "Let's get you set up",
     "subtitle": "A few quick steps to personalize your experience.",
     "continue": "Continue",
-    "skip": "Skip for now"
+    "skip": "Skip for now",
+    "step": "Step {{current}} of {{total}}",
+    "goalTitle": "What brings you here?",
+    "goalSubtitle": "Pick one. It just helps us point you in the right direction — you can do everything either way.",
+    "goals": {
+      "organize": { "title": "Organize my accounts", "desc": "See everything I have in one place." },
+      "prepare_device_loss": { "title": "Be ready if I lose a device", "desc": "Know what breaks if my phone or laptop is gone." },
+      "improve_security": { "title": "Improve my account security", "desc": "Find weak spots and fix the important ones." },
+      "understand_footprint": { "title": "Understand my digital footprint", "desc": "See where my logins and data live." },
+      "workshop": { "title": "I'm in a workshop", "desc": "Follow along with the activity." }
+    },
+    "areaTitle": "Where should we start?",
+    "areaSubtitle": "Choose one life area to map your first account. You can add the rest later.",
+    "firstAccountTitle": "Add your first account",
+    "firstAccountSubtitle": "Just the basics — no passwords, ever. You can fill in details later.",
+    "successTitle": "You mapped your first account and one recovery dependency.",
+    "successSubtitle": "That's the whole idea. Keep going to see your map and readiness grow.",
+    "start": "Go to my map"
   },
   "nav": {
     "home": "Home",
     "settings": "Settings",
     "profile": "Profile",
     "app": "Overview",
+    "overview": "Overview",
+    "map": "Map",
     "accounts": "Accounts",
     "devices": "Devices",
-    "readiness": "Readiness"
+    "inventory": "Inventory",
+    "readiness": "Readiness",
+    "simulations": "Simulations"
+  },
+  "lifeAreas": {
+    "school_work": "School / Work",
+    "email": "Email",
+    "phone": "Phone",
+    "banking": "Banking",
+    "cloud": "Cloud storage",
+    "social": "Social media",
+    "gaming": "Gaming",
+    "shopping": "Shopping & subscriptions",
+    "government_health": "Government / Health",
+    "unknown": "Not sure yet"
+  },
+  "account": {
+    "authMethods": {
+      "password": "Password",
+      "social_login": "Sign in with another account",
+      "passkey": "Passkey",
+      "magic_link": "Magic link",
+      "sms_code": "SMS code",
+      "unknown": "Not sure"
+    },
+    "twoFactor": {
+      "none": "No 2FA",
+      "sms": "2FA by SMS",
+      "authenticator_app": "Authenticator app",
+      "security_key": "Security key",
+      "unknown": "Not sure"
+    },
+    "recoveryMethods": {
+      "email": "Recovery email",
+      "phone": "Recovery phone",
+      "backup_codes": "Backup codes",
+      "security_questions": "Security questions",
+      "recovery_contact": "Recovery contact",
+      "customer_support": "Customer support",
+      "none": "No recovery set",
+      "unknown": "Not sure"
+    },
+    "importance": {
+      "high": "Critical",
+      "medium": "Important",
+      "low": "Minor"
+    },
+    "improveTitle": "What could improve"
+  },
+  "deviceKinds": {
+    "phone": "Phone",
+    "laptop": "Laptop",
+    "desktop": "Desktop",
+    "tablet": "Tablet",
+    "other": "Other"
+  },
+  "deviceLock": {
+    "biometric": "Face / fingerprint",
+    "pin": "PIN",
+    "password": "Password",
+    "none": "No lock",
+    "unknown": "Not sure"
+  },
+  "overview": {
+    "welcome": "Your map at a glance",
+    "subtitle": "A calm overview of what you have and what to do next.",
+    "readinessTitle": "Readiness",
+    "viewFull": "See details",
+    "viewMap": "Open the map",
+    "nextActionsTitle": "Next steps",
+    "noActions": "Nothing urgent — nice work.",
+    "statsAccounts": "Accounts",
+    "statsDevices": "Devices",
+    "statsRisks": "Risks found",
+    "mapPreviewTitle": "Your account map",
+    "emptyTitle": "Your map is empty",
+    "emptyDesc": "Add your first account to start seeing how everything connects.",
+    "emptyCta": "Map an account"
+  },
+  "map": {
+    "title": "Account map",
+    "subtitle": "How your accounts, devices, and recovery paths connect.",
+    "allAreas": "All areas",
+    "filterByArea": "Life area",
+    "fitView": "Fit to view",
+    "hint": "Pinch to zoom, drag to pan. Tap a node for details.",
+    "legendTitle": "Legend",
+    "legend": {
+      "account": "Account",
+      "device": "Device",
+      "recovery": "Recovery anchor"
+    },
+    "edges": {
+      "runs_on": "runs on",
+      "recovers": "recovers via",
+      "depends_on": "depends on"
+    },
+    "emptyTitle": "Nothing to map yet",
+    "emptyDesc": "Add an account and we'll draw how it connects to your devices and recovery paths.",
+    "emptyCta": "Add an account"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "subtitle": "Every account and device you've mapped.",
+    "addAccount": "Add account",
+    "addDevice": "Add device",
+    "search": "Search…",
+    "tabs": { "all": "All", "accounts": "Accounts", "devices": "Devices" },
+    "filterArea": "Life area",
+    "usedOn": "Used on",
+    "recoversVia": "Recovery",
+    "signsInWith": "Signs in with",
+    "keyFile": "Key file",
+    "noDevice": "No device linked",
+    "noRecovery": "No recovery path",
+    "dependedOnBy": "{{count}} accounts depend on this",
+    "accountsCount": "{{count}} accounts",
+    "devicesCount": "{{count}} devices",
+    "emptyTitle": "Nothing here yet",
+    "emptyDesc": "Start by adding the accounts and devices you use most.",
+    "emptyCta": "Add your first account"
+  },
+  "accountForm": {
+    "addTitle": "Add an account",
+    "editTitle": "Edit account",
+    "subtitle": "Metadata only — never passwords or recovery codes.",
+    "name": "Account name",
+    "namePlaceholder": "e.g. Gmail, BBVA, Instagram",
+    "provider": "Provider",
+    "providerPlaceholder": "e.g. Google, Apple",
+    "lifeArea": "Life area",
+    "importance": "How important is it?",
+    "authMethod": "How do you log in?",
+    "twoFactor": "Second factor (2FA)",
+    "recovery": "Recovery method",
+    "recoveryEmail": "Recovery email account",
+    "recoveryPhone": "Recovery phone (masked)",
+    "recoveryPhonePlaceholder": "+52 ••• ••• 1234",
+    "socialLogin": "Signs in with",
+    "devices": "Devices it's used on",
+    "hasBackupCodes": "I've saved backup codes",
+    "backupCodesLocation": "Where are they saved?",
+    "backupCodesPlaceholder": "e.g. printed at home, password manager",
+    "keyFileLabel": "Key file (e.firma, certificate, SSH key)",
+    "keyFilePlaceholder": "e.g. e.firma",
+    "keyFileLocation": "Where is it kept?",
+    "keyFileLocationPlaceholder": "e.g. only on my laptop, USB at home",
+    "notes": "Notes",
+    "notesPlaceholder": "Anything you want to remember…",
+    "selectArea": "Choose a life area",
+    "noneOption": "— none —"
+  },
+  "deviceForm": {
+    "addTitle": "Add a device",
+    "name": "Device name",
+    "namePlaceholder": "e.g. iPhone 13, MacBook Air",
+    "kind": "Type",
+    "lock": "Screen lock",
+    "findMy": "\"Find my device\" is on"
+  },
+  "readiness": {
+    "notReady": "Needs work",
+    "inProgress": "Getting there",
+    "ready": "Solid",
+    "mastered": "Excellent",
+    "title": "Readiness",
+    "subtitle": "Could you keep going if something failed? Here's where you stand.",
+    "overall": "Overall readiness",
+    "levelMessage": {
+      "notReady": "A few important gaps. Nothing to panic about — let's close them one at a time.",
+      "inProgress": "You're on your way. A couple of focused steps will make a real difference.",
+      "ready": "You're in good shape. Mostly small refinements left.",
+      "mastered": "You can rest easy — your important accounts are well covered."
+    },
+    "scoreCaption": "{{score}} / 100",
+    "categoriesTitle": "Breakdown",
+    "categories": {
+      "account_protection": { "title": "Account protection", "desc": "Your important accounts have a second factor." },
+      "recovery_clarity": { "title": "Recovery clarity", "desc": "You know how you'd get back into each account." },
+      "device_continuity": { "title": "Device continuity", "desc": "Your devices are locked and findable." },
+      "backup_awareness": { "title": "Backup awareness", "desc": "Critical accounts have backup codes saved somewhere safe." },
+      "dependency_visibility": { "title": "Dependency visibility", "desc": "You're not funneling everything through one account." },
+      "unresolved_unknowns": { "title": "Open questions", "desc": "Fewer \"not sure\" answers across your accounts." }
+    },
+    "weakItems": "Needs attention",
+    "actionsTitle": "Recommended next actions",
+    "noActions": "No actions right now — your map looks healthy."
+  },
+  "actions": {
+    "severity": { "high": "High priority", "medium": "Worth doing", "low": "When you can" },
+    "enable_2fa": { "title": "Turn on 2FA for {{name}}", "why": "A second factor stops most account takeovers, even if a password leaks." },
+    "add_recovery": { "title": "Set a recovery path for {{name}}", "why": "Without one, a lost password can mean losing the account for good." },
+    "save_backup_codes": { "title": "Save backup codes for {{name}}", "why": "If you lose your phone, backup codes are often the only way back in." },
+    "reduce_google_dependency": { "title": "Reduce how much depends on {{name}}", "why": "Many accounts recover or sign in through this one — if it's lost, a lot breaks at once." },
+    "set_device_lock": { "title": "Add a screen lock to {{name}}", "why": "A lock keeps your accounts safe if the device is lost or stolen." },
+    "resolve_unknown": { "title": "Fill in the unknowns for {{name}}", "why": "Knowing how you log in and recover is the first step to protecting it." }
+  },
+  "sim": {
+    "title": "Simulations",
+    "subtitle": "Play out a worst case before it happens. \"What breaks if…\"",
+    "pickScenario": "Pick a scenario",
+    "runAgain": "Try another scenario",
+    "scenarios": {
+      "lose_phone": { "title": "I lose my phone", "question": "What breaks if my phone is gone?" },
+      "laptop_dies": { "title": "My laptop dies", "question": "What breaks if my laptop stops working?" },
+      "email_locked": { "title": "My main email is locked", "question": "What breaks if I can't get into my main email?" },
+      "card_stolen": { "title": "My card is stolen", "question": "What breaks if my card details are stolen?" },
+      "cloud_unavailable": { "title": "My cloud is unavailable", "question": "What breaks if my cloud storage is locked?" },
+      "password_manager_unavailable": { "title": "My password manager is unavailable", "question": "What breaks if I can't open my password manager?" }
+    },
+    "summaryBlocked": "{{count}} could be locked out",
+    "summaryAtRisk": "{{count}} at risk",
+    "summaryNone": "Good news — nothing critical breaks here.",
+    "affectedTitle": "What's affected",
+    "severity": { "blocked": "Locked out", "at_risk": "At risk", "ok": "Probably fine" },
+    "reasons": {
+      "lives_on": "You use this here",
+      "recovery_email": "Recovers through this email",
+      "recovery_phone": "Needs a code from your phone",
+      "social_login": "You sign in with the lost account",
+      "stored_here": "Its access is stored here"
+    },
+    "whatToDo": "What you can do now"
   },
   "theme": {
     "label": "Theme",
@@ -40,12 +294,6 @@
     "noData": "Nothing here yet.",
     "noResults": "No results found.",
     "comingSoon": "Coming soon."
-  },
-  "readiness": {
-    "notReady": "Not ready",
-    "inProgress": "In progress",
-    "ready": "Ready",
-    "mastered": "Mastered"
   },
   "notFound": {
     "title": "Page not found",

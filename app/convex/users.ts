@@ -14,6 +14,20 @@ export const me = query({
   },
 });
 
+export const completeOnboarding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    if (user.status !== "ONBOARDED") {
+      await ctx.db.patch("users", user._id, {
+        status: "ONBOARDED",
+        updatedAt: Date.now(),
+      });
+    }
+    return user._id;
+  },
+});
+
 export const ensureUser = mutation({
   args: {},
   handler: async (ctx) => {

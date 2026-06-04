@@ -15,20 +15,274 @@
     "valueProp": "Lleva tus cuentas, dispositivos y tu progreso en un solo lugar, con calma — y gana confianza real con la tecnología que usas.",
     "signInHint": "¿Ya tienes una cuenta?"
   },
+  "common": {
+    "add": "Agregar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "optional": "opcional",
+    "unknown": "No estoy seguro",
+    "none": "Ninguno",
+    "yes": "Sí",
+    "no": "No"
+  },
   "onboarding": {
     "title": "Vamos a comenzar",
     "subtitle": "Unos pasos rápidos para personalizar tu experiencia.",
     "continue": "Continuar",
-    "skip": "Omitir por ahora"
+    "skip": "Omitir por ahora",
+    "step": "Paso {{current}} de {{total}}",
+    "goalTitle": "¿Qué te trae aquí?",
+    "goalSubtitle": "Elige una. Solo nos ayuda a orientarte mejor — puedes hacer todo de cualquier forma.",
+    "goals": {
+      "organize": { "title": "Organizar mis cuentas", "desc": "Ver todo lo que tengo en un solo lugar." },
+      "prepare_device_loss": { "title": "Prepararme por si pierdo un dispositivo", "desc": "Saber qué se rompe si pierdo mi teléfono o laptop." },
+      "improve_security": { "title": "Mejorar la seguridad de mis cuentas", "desc": "Encontrar puntos débiles y arreglar los importantes." },
+      "understand_footprint": { "title": "Entender mi huella digital", "desc": "Ver dónde viven mis sesiones y datos." },
+      "workshop": { "title": "Estoy en un taller", "desc": "Seguir la actividad paso a paso." }
+    },
+    "areaTitle": "¿Por dónde empezamos?",
+    "areaSubtitle": "Elige un área de tu vida para mapear tu primera cuenta. El resto lo agregas después.",
+    "firstAccountTitle": "Agrega tu primera cuenta",
+    "firstAccountSubtitle": "Solo lo básico — nunca contraseñas. Puedes completar detalles después.",
+    "successTitle": "Mapeaste tu primera cuenta y una dependencia de recuperación.",
+    "successSubtitle": "De eso se trata. Sigue adelante para ver crecer tu mapa y tu preparación.",
+    "start": "Ir a mi mapa"
   },
   "nav": {
     "home": "Inicio",
     "settings": "Ajustes",
     "profile": "Perfil",
     "app": "Resumen",
+    "overview": "Resumen",
+    "map": "Mapa",
     "accounts": "Cuentas",
     "devices": "Dispositivos",
-    "readiness": "Progreso"
+    "inventory": "Inventario",
+    "readiness": "Preparación",
+    "simulations": "Simulaciones"
+  },
+  "lifeAreas": {
+    "school_work": "Escuela / Trabajo",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "banking": "Banca",
+    "cloud": "Almacenamiento en la nube",
+    "social": "Redes sociales",
+    "gaming": "Videojuegos",
+    "shopping": "Compras y suscripciones",
+    "government_health": "Gobierno / Salud",
+    "unknown": "Aún no sé"
+  },
+  "account": {
+    "authMethods": {
+      "password": "Contraseña",
+      "social_login": "Iniciar con otra cuenta",
+      "passkey": "Llave de acceso",
+      "magic_link": "Enlace mágico",
+      "sms_code": "Código por SMS",
+      "unknown": "No estoy seguro"
+    },
+    "twoFactor": {
+      "none": "Sin 2FA",
+      "sms": "2FA por SMS",
+      "authenticator_app": "App de autenticación",
+      "security_key": "Llave de seguridad",
+      "unknown": "No estoy seguro"
+    },
+    "recoveryMethods": {
+      "email": "Correo de recuperación",
+      "phone": "Teléfono de recuperación",
+      "backup_codes": "Códigos de respaldo",
+      "security_questions": "Preguntas de seguridad",
+      "recovery_contact": "Contacto de recuperación",
+      "customer_support": "Atención al cliente",
+      "none": "Sin recuperación",
+      "unknown": "No estoy seguro"
+    },
+    "importance": {
+      "high": "Crítica",
+      "medium": "Importante",
+      "low": "Menor"
+    },
+    "improveTitle": "Qué podrías mejorar"
+  },
+  "deviceKinds": {
+    "phone": "Teléfono",
+    "laptop": "Laptop",
+    "desktop": "Computadora",
+    "tablet": "Tableta",
+    "other": "Otro"
+  },
+  "deviceLock": {
+    "biometric": "Rostro / huella",
+    "pin": "PIN",
+    "password": "Contraseña",
+    "none": "Sin bloqueo",
+    "unknown": "No estoy seguro"
+  },
+  "overview": {
+    "welcome": "Tu mapa de un vistazo",
+    "subtitle": "Un resumen tranquilo de lo que tienes y qué sigue.",
+    "readinessTitle": "Preparación",
+    "viewFull": "Ver detalles",
+    "viewMap": "Abrir el mapa",
+    "nextActionsTitle": "Próximos pasos",
+    "noActions": "Nada urgente — buen trabajo.",
+    "statsAccounts": "Cuentas",
+    "statsDevices": "Dispositivos",
+    "statsRisks": "Riesgos encontrados",
+    "mapPreviewTitle": "Tu mapa de cuentas",
+    "emptyTitle": "Tu mapa está vacío",
+    "emptyDesc": "Agrega tu primera cuenta para empezar a ver cómo se conecta todo.",
+    "emptyCta": "Mapear una cuenta"
+  },
+  "map": {
+    "title": "Mapa de cuentas",
+    "subtitle": "Cómo se conectan tus cuentas, dispositivos y rutas de recuperación.",
+    "allAreas": "Todas las áreas",
+    "filterByArea": "Área de vida",
+    "fitView": "Ajustar a la vista",
+    "hint": "Pellizca para acercar, arrastra para mover. Toca un nodo para ver detalles.",
+    "legendTitle": "Leyenda",
+    "legend": {
+      "account": "Cuenta",
+      "device": "Dispositivo",
+      "recovery": "Ancla de recuperación"
+    },
+    "edges": {
+      "runs_on": "corre en",
+      "recovers": "se recupera con",
+      "depends_on": "depende de"
+    },
+    "emptyTitle": "Aún no hay nada que mapear",
+    "emptyDesc": "Agrega una cuenta y dibujaremos cómo se conecta con tus dispositivos y rutas de recuperación.",
+    "emptyCta": "Agregar una cuenta"
+  },
+  "inventory": {
+    "title": "Inventario",
+    "subtitle": "Cada cuenta y dispositivo que has mapeado.",
+    "addAccount": "Agregar cuenta",
+    "addDevice": "Agregar dispositivo",
+    "search": "Buscar…",
+    "tabs": { "all": "Todo", "accounts": "Cuentas", "devices": "Dispositivos" },
+    "filterArea": "Área de vida",
+    "usedOn": "Se usa en",
+    "recoversVia": "Recuperación",
+    "signsInWith": "Inicia sesión con",
+    "keyFile": "Archivo clave",
+    "noDevice": "Sin dispositivo vinculado",
+    "noRecovery": "Sin ruta de recuperación",
+    "dependedOnBy": "{{count}} cuentas dependen de esta",
+    "accountsCount": "{{count}} cuentas",
+    "devicesCount": "{{count}} dispositivos",
+    "emptyTitle": "Aún no hay nada aquí",
+    "emptyDesc": "Empieza agregando las cuentas y dispositivos que más usas.",
+    "emptyCta": "Agrega tu primera cuenta"
+  },
+  "accountForm": {
+    "addTitle": "Agregar una cuenta",
+    "editTitle": "Editar cuenta",
+    "subtitle": "Solo metadatos — nunca contraseñas ni códigos de recuperación.",
+    "name": "Nombre de la cuenta",
+    "namePlaceholder": "p. ej. Gmail, BBVA, Instagram",
+    "provider": "Proveedor",
+    "providerPlaceholder": "p. ej. Google, Apple",
+    "lifeArea": "Área de vida",
+    "importance": "¿Qué tan importante es?",
+    "authMethod": "¿Cómo inicias sesión?",
+    "twoFactor": "Segundo factor (2FA)",
+    "recovery": "Método de recuperación",
+    "recoveryEmail": "Cuenta de correo de recuperación",
+    "recoveryPhone": "Teléfono de recuperación (oculto)",
+    "recoveryPhonePlaceholder": "+52 ••• ••• 1234",
+    "socialLogin": "Inicia sesión con",
+    "devices": "Dispositivos donde se usa",
+    "hasBackupCodes": "Guardé códigos de respaldo",
+    "backupCodesLocation": "¿Dónde están guardados?",
+    "backupCodesPlaceholder": "p. ej. impresos en casa, gestor de contraseñas",
+    "keyFileLabel": "Archivo clave (e.firma, certificado, llave SSH)",
+    "keyFilePlaceholder": "p. ej. e.firma",
+    "keyFileLocation": "¿Dónde lo guardas?",
+    "keyFileLocationPlaceholder": "p. ej. solo en mi laptop, USB en casa",
+    "notes": "Notas",
+    "notesPlaceholder": "Algo que quieras recordar…",
+    "selectArea": "Elige un área de vida",
+    "noneOption": "— ninguno —"
+  },
+  "deviceForm": {
+    "addTitle": "Agregar un dispositivo",
+    "name": "Nombre del dispositivo",
+    "namePlaceholder": "p. ej. iPhone 13, MacBook Air",
+    "kind": "Tipo",
+    "lock": "Bloqueo de pantalla",
+    "findMy": "\"Buscar mi dispositivo\" está activo"
+  },
+  "readiness": {
+    "notReady": "Por trabajar",
+    "inProgress": "Vas avanzando",
+    "ready": "Sólido",
+    "mastered": "Excelente",
+    "title": "Preparación",
+    "subtitle": "¿Podrías seguir si algo fallara? Aquí está tu situación.",
+    "overall": "Preparación general",
+    "levelMessage": {
+      "notReady": "Hay algunos huecos importantes. Sin pánico — los cerramos uno por uno.",
+      "inProgress": "Vas en camino. Un par de pasos concretos harán una diferencia real.",
+      "ready": "Vas muy bien. Quedan sobre todo pequeños ajustes.",
+      "mastered": "Puedes estar tranquilo — tus cuentas importantes están bien cubiertas."
+    },
+    "scoreCaption": "{{score}} / 100",
+    "categoriesTitle": "Desglose",
+    "categories": {
+      "account_protection": { "title": "Protección de cuentas", "desc": "Tus cuentas importantes tienen un segundo factor." },
+      "recovery_clarity": { "title": "Claridad de recuperación", "desc": "Sabes cómo volver a entrar a cada cuenta." },
+      "device_continuity": { "title": "Continuidad de dispositivos", "desc": "Tus dispositivos están bloqueados y se pueden localizar." },
+      "backup_awareness": { "title": "Respaldos", "desc": "Las cuentas críticas tienen códigos de respaldo guardados en un lugar seguro." },
+      "dependency_visibility": { "title": "Visibilidad de dependencias", "desc": "No estás concentrando todo en una sola cuenta." },
+      "unresolved_unknowns": { "title": "Preguntas abiertas", "desc": "Menos respuestas \"no sé\" en tus cuentas." }
+    },
+    "weakItems": "Necesita atención",
+    "actionsTitle": "Próximas acciones recomendadas",
+    "noActions": "Sin acciones por ahora — tu mapa se ve sano."
+  },
+  "actions": {
+    "severity": { "high": "Prioridad alta", "medium": "Vale la pena", "low": "Cuando puedas" },
+    "enable_2fa": { "title": "Activa 2FA en {{name}}", "why": "Un segundo factor detiene la mayoría de los robos de cuenta, aunque se filtre la contraseña." },
+    "add_recovery": { "title": "Configura una recuperación para {{name}}", "why": "Sin ella, perder la contraseña puede significar perder la cuenta para siempre." },
+    "save_backup_codes": { "title": "Guarda códigos de respaldo para {{name}}", "why": "Si pierdes tu teléfono, los códigos de respaldo suelen ser la única forma de volver a entrar." },
+    "reduce_google_dependency": { "title": "Reduce cuánto depende de {{name}}", "why": "Muchas cuentas se recuperan o inician sesión con esta — si se pierde, se rompe mucho a la vez." },
+    "set_device_lock": { "title": "Agrega un bloqueo de pantalla a {{name}}", "why": "Un bloqueo mantiene tus cuentas seguras si pierden o roban el dispositivo." },
+    "resolve_unknown": { "title": "Completa lo desconocido de {{name}}", "why": "Saber cómo inicias sesión y te recuperas es el primer paso para protegerla." }
+  },
+  "sim": {
+    "title": "Simulaciones",
+    "subtitle": "Imagina el peor caso antes de que pase. \"¿Qué se rompe si…?\"",
+    "pickScenario": "Elige un escenario",
+    "runAgain": "Probar otro escenario",
+    "scenarios": {
+      "lose_phone": { "title": "Pierdo mi teléfono", "question": "¿Qué se rompe si pierdo mi teléfono?" },
+      "laptop_dies": { "title": "Mi laptop deja de funcionar", "question": "¿Qué se rompe si mi laptop deja de funcionar?" },
+      "email_locked": { "title": "Pierdo acceso a mi correo principal", "question": "¿Qué se rompe si no puedo entrar a mi correo principal?" },
+      "card_stolen": { "title": "Me roban la tarjeta", "question": "¿Qué se rompe si roban los datos de mi tarjeta?" },
+      "cloud_unavailable": { "title": "Mi nube no está disponible", "question": "¿Qué se rompe si bloquean mi almacenamiento en la nube?" },
+      "password_manager_unavailable": { "title": "No puedo abrir mi gestor de contraseñas", "question": "¿Qué se rompe si no puedo abrir mi gestor de contraseñas?" }
+    },
+    "summaryBlocked": "{{count}} podrían quedar bloqueadas",
+    "summaryAtRisk": "{{count}} en riesgo",
+    "summaryNone": "Buenas noticias — aquí no se rompe nada crítico.",
+    "affectedTitle": "Qué se ve afectado",
+    "severity": { "blocked": "Bloqueada", "at_risk": "En riesgo", "ok": "Probablemente bien" },
+    "reasons": {
+      "lives_on": "La usas aquí",
+      "recovery_email": "Se recupera con este correo",
+      "recovery_phone": "Necesita un código de tu teléfono",
+      "social_login": "Inicias sesión con la cuenta perdida",
+      "stored_here": "Su acceso está guardado aquí"
+    },
+    "whatToDo": "Qué puedes hacer ahora"
   },
   "theme": {
     "label": "Tema",
@@ -40,12 +294,6 @@
     "noData": "Aún no hay nada aquí.",
     "noResults": "No se encontraron resultados.",
     "comingSoon": "Próximamente."
-  },
-  "readiness": {
-    "notReady": "No listo",
-    "inProgress": "En progreso",
-    "ready": "Listo",
-    "mastered": "Dominado"
   },
   "notFound": {
     "title": "Página no encontrada",

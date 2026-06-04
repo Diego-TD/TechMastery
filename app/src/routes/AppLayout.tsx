@@ -1,9 +1,10 @@
 import { UserButton } from "@clerk/clerk-react";
-import { Gauge, LayoutDashboard, MonitorSmartphone, User } from "lucide-react";
+import { Boxes, FlaskConical, Gauge, LayoutDashboard, Network } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "react-router";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { QuickAddFab } from "@/features/inventory/QuickAddFab";
 import { cn } from "@/lib/utils";
 
 type TFunc = ReturnType<typeof useTranslation>["t"];
@@ -20,18 +21,19 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
     to: "/app",
     end: true,
     Icon: LayoutDashboard,
-    label: (t) => t(($) => $.nav.app),
+    label: (t) => t(($) => $.nav.overview),
   },
-  { to: "/app/accounts", Icon: User, label: (t) => t(($) => $.nav.accounts) },
-  {
-    to: "/app/devices",
-    Icon: MonitorSmartphone,
-    label: (t) => t(($) => $.nav.devices),
-  },
+  { to: "/app/map", Icon: Network, label: (t) => t(($) => $.nav.map) },
+  { to: "/app/inventory", Icon: Boxes, label: (t) => t(($) => $.nav.inventory) },
   {
     to: "/app/readiness",
     Icon: Gauge,
     label: (t) => t(($) => $.nav.readiness),
+  },
+  {
+    to: "/app/simulations",
+    Icon: FlaskConical,
+    label: (t) => t(($) => $.nav.simulations),
   },
 ];
 
@@ -78,6 +80,8 @@ export function AppLayout() {
       <main className="flex flex-1 flex-col px-4 py-6 pb-24 md:pb-6">
         <Outlet />
       </main>
+
+      <QuickAddFab />
 
       {/* Mobile bottom tab bar */}
       <nav className="fixed inset-x-0 bottom-0 z-10 flex items-stretch border-t bg-background/95 backdrop-blur md:hidden">
