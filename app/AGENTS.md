@@ -20,6 +20,18 @@ Convex agent skills for common tasks can be installed by running
 - Convex handles backend data, auth-aware functions, and realtime backend features.
 - Shared domain enums/validators live in `shared/` when they are used by both Convex and React (vite).
 
+## Current App State
+
+- The authenticated app is an MVP for account visibility and recovery readiness.
+- Inventory persistence is live in Convex: `convex/schema.ts` + `convex/inventory.ts`.
+- The frontend inventory seam is `src/lib/inventory/store.tsx`; pure derived logic lives in
+  `src/lib/inventory/derive.ts`; domain types live in `src/lib/inventory/types.ts`.
+- `src/lib/mock/seed.ts` is only a legacy fixture seed. Do not add new app logic under `src/lib/mock`.
+- Inventory supports accounts, devices, authenticator apps, and phone numbers. Phone numbers surface under the Phone life-area filter.
+- Simulations are generated from user entities: devices, phone numbers, email accounts, password managers, and card-loss only when banking/shopping accounts exist.
+- Onboarding stores selected user intent as optional `users.onboardingGoal`.
+- Root `/` is a lightweight in-app landing/sign-in page.
+
 ## Auth And Routing
 
 - root router owns all auth/onboarding redirects, derived only from useCurrentUser.
@@ -59,4 +71,5 @@ When requirements are clear, build a feature back-to-front in this order, reusin
 1. **Schema** — add tables/indexes in `convex/schema.ts`; put validators shared by Convex and the app in `shared/enums.ts`. Add an index for every lookup (never `.filter()`).
 2. **Convex functions** — derive auth with `getCurrentUserOrThrow` and role gates from `convex/lib/`; validate all args; throw `ConvexError` for client-facing errors; return bounded results (`.take()` / `.paginate()`).
 3. **Convex tests** — colocate `*.test.ts` in `convex/`; use `convex-test` + `vitest`; seed data through existing mutations and promote roles via `t.run(ctx => ctx.db.patch(...))`. Run `npm run test:backend`.
-4. **UI/UX** — Shadcn components first.
+4. **Frontend seam** — expose backend changes through `src/lib/inventory/store.tsx` where inventory screens already consume hooks.
+5. **UI/UX** — Shadcn components first.
