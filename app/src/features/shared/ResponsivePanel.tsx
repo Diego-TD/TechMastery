@@ -1,6 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { PortalContainerContext } from "./PortalContainer";
 import {
   Drawer,
   DrawerContent,
@@ -24,35 +23,72 @@ type Props = {
   children: ReactNode;
 };
 
+const MENU_CONTENT_SELECTOR =
+  "[data-radix-popper-content-wrapper],[data-radix-select-viewport],[data-slot='select-content'],[data-slot='dropdown-menu-content']";
+const FLOATING_CONTENT_SELECTOR = `${MENU_CONTENT_SELECTOR},[data-sonner-toaster]`;
+const SELECT_OPEN_SELECTOR = "[data-tm-select-open]";
+
+/** True when an event target lives inside a Radix popover, Select, or toast. */
+function fromFloatingContent(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest(FLOATING_CONTENT_SELECTOR));
+}
+
+function openFloatingContentInsideDrawer(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    Boolean(target.closest("[data-slot='drawer-content']")) &&
+    Boolean(document.querySelector(MENU_CONTENT_SELECTOR))
+  );
+}
+
+function selectDismissalInProgress(): boolean {
+  return typeof document !== "undefined" && Boolean(document.querySelector(SELECT_OPEN_SELECTOR));
+}
+
 /**
  * One panel, two presentations: a right-side Sheet on laptop (deep work) and a
- * bottom Drawer on phone (quick, thumb-reachable). On mobile the drawer node is
- * exposed as the portal container so Select/dropdown content renders *inside*
- * the drawer — a tap on it no longer dismisses the sheet and loses input.
+ * bottom Drawer on phone (quick, thumb-reachable). Used for both account detail
+ * and the add/edit form.
  */
 export function ResponsivePanel({ open, onOpenChange, title, description, children }: Props) {
   const isMobile = useIsMobile();
-  const [drawerEl, setDrawerEl] = useState<HTMLElement | null>(null);
+  const ignoreNextDrawerCloseRef = useRef(false);
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="bg-background">
-          {/*
-           * Plain wrapper div as the portal container (a ref on the shadcn
-           * DrawerContent isn't guaranteed to reach a DOM node). Select/dropdown
-           * content portals in here, so it's a real DOM child of the drawer and
-           * a tap on it never reads as "outside" → the sheet stays open.
-           */}
-          <div ref={setDrawerEl} className="flex min-h-0 flex-1 flex-col">
-            <PortalContainerContext.Provider value={drawerEl}>
-              <DrawerHeader className="text-left">
-                <DrawerTitle>{title}</DrawerTitle>
-                {description && <DrawerDescription>{description}</DrawerDescription>}
-              </DrawerHeader>
-              <div className="overflow-y-auto px-4 pb-8">{children}</div>
-            </PortalContainerContext.Provider>
-          </div>
+      <Drawer
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && (ignoreNextDrawerCloseRef.current || selectDismissalInProgress())) {
+            ignoreNextDrawerCloseRef.current = false;
+            return;
+          }
+          onOpenChange(nextOpen);
+        }}
+      >
+        <DrawerContent
+          className="bg-background"
+          onPointerDownCapture={(e) => {
+            if (openFloatingContentInsideDrawer(e.target)) {
+              ignoreNextDrawerCloseRef.current = true;
+            }
+          }}
+          onPointerDownOutside={(e) => {
+            if (fromFloatingContent(e.target) || openFloatingContentInsideDrawer(e.target)) {
+              e.preventDefault();
+            }
+          }}
+          onInteractOutside={(e) => {
+            if (fromFloatingContent(e.target) || openFloatingContentInsideDrawer(e.target)) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <DrawerHeader className="text-left">
+            <DrawerTitle>{title}</DrawerTitle>
+            {description && <DrawerDescription>{description}</DrawerDescription>}
+          </DrawerHeader>
+          <div className="overflow-y-auto px-4 pb-8">{children}</div>
         </DrawerContent>
       </Drawer>
     );
