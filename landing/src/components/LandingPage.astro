@@ -1,0 +1,259 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { languages, type Lang } from "../i18n/ui";
+import { pathForLang } from "../i18n/utils";
+import type { LandingContent } from "../i18n/landing";
+
+type Props = {
+  lang: Lang;
+  copy: LandingContent;
+};
+
+const { lang, copy } = Astro.props;
+const appUrl = "https://beta.techmastery.dev/";
+const langEntries = Object.entries(languages) as Array<[Lang, string]>;
+
+// Feature icons keyed by index (lucide outlines, inlined to avoid a dependency).
+const featureIcons = [
+  '<path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/><path d="M9 21V9"/>',
+  '<circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 9v6a3 3 0 0 0 3 3h6"/><path d="M18 9v0"/>',
+  '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  '<path d="M12 3a6 6 0 0 0-6 6c0 1 .2 2 .6 3l-1.6 4 4-1.5A6 6 0 1 0 12 3z"/><path d="M12 8v4l2 1"/>',
+];
+---
+
+<BaseLayout lang={lang} title={copy.meta.title} description={copy.meta.description}>
+  <div class="site-shell">
+    <header class="topbar" aria-label="Primary">
+      <a class="brand" href={pathForLang(lang)} aria-label="TechMastery">
+        TechMastery
+        <span class="beta">beta</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#product">{copy.nav.product}</a>
+        <a href="#workshops">{copy.nav.workshops}</a>
+        <a href="#approach">{copy.nav.approach}</a>
+        <a href="#privacy">{copy.nav.privacy}</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="language-switcher" aria-label={copy.controls.language}>
+          {langEntries.map(([code]) => (
+            <a
+              href={pathForLang(code)}
+              class:list={["language-link", { active: code === lang }]}
+              aria-current={code === lang ? "page" : undefined}
+            >
+              {code.toUpperCase()}
+            </a>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          class="theme-toggle"
+          data-theme-toggle
+          aria-label={copy.controls.theme}
+        >
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        </button>
+
+        <a class="button header-app-link" href={appUrl}>{copy.nav.app}</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <p class="eyebrow" data-reveal>{copy.hero.eyebrow}</p>
+        <h1 id="hero-title" data-reveal style="--reveal-delay: 60ms">
+          {copy.hero.title} <span class="accent">{copy.hero.titleAccent}</span>
+        </h1>
+        <p class="lead" data-reveal style="--reveal-delay: 140ms">{copy.hero.lead}</p>
+        <div class="hero-actions" data-reveal style="--reveal-delay: 220ms">
+          <a class="button button-primary button-lg" href={appUrl}>{copy.hero.primaryCta}</a>
+          <a class="button button-secondary button-lg" href="#product">{copy.hero.secondaryCta}</a>
+        </div>
+        <ul class="trust-list" data-reveal style="--reveal-delay: 300ms" aria-label="What to expect">
+          {copy.hero.trust.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      {/* Product preview window. Swap the .window-body contents with a real
+          seeded screenshot when one is ready — the frame stays the same. */}
+      <div class="product-frame" data-reveal style="--reveal-delay: 120ms">
+        <div class="product-window" aria-label={copy.productMock.title}>
+          <div class="window-bar">
+            <div class="window-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="window-url">beta.techmastery.dev</div>
+          </div>
+          <div class="window-body">
+            <div class="window-side">
+              <div class="readiness-panel">
+                <div class="readiness-head">
+                  <div>
+                    <p>{copy.productMock.title}</p>
+                    <strong>{copy.productMock.score}</strong>
+                  </div>
+                  <span class="pill">{copy.productMock.scoreLabel}</span>
+                </div>
+                <div class="readiness-bar"><span></span></div>
+              </div>
+              <div class="next-action">
+                <span>{copy.productMock.nextActionLabel}</span>
+                <strong>{copy.productMock.nextAction}</strong>
+              </div>
+            </div>
+            <div class="map-preview">
+              <svg viewBox="0 0 420 300" role="img" aria-label="Account dependency map preview">
+                <line x1="95" y1="140" x2="210" y2="80"></line>
+                <line x1="95" y1="140" x2="215" y2="210"></line>
+                <line x1="210" y1="80" x2="330" y2="130"></line>
+                <line x1="215" y1="210" x2="330" y2="130"></line>
+                <line x1="215" y1="210" x2="320" y2="235"></line>
+                <g class="node-warm">
+                  <circle cx="95" cy="140" r="36"></circle>
+                  <text x="95" y="145">{copy.productMock.nodes[0]}</text>
+                </g>
+                <g>
+                  <circle cx="210" cy="80" r="34"></circle>
+                  <text x="210" y="85">{copy.productMock.nodes[1]}</text>
+                </g>
+                <g>
+                  <circle cx="215" cy="210" r="38"></circle>
+                  <text x="215" y="215">{copy.productMock.nodes[2]}</text>
+                </g>
+                <g>
+                  <circle cx="330" cy="130" r="42"></circle>
+                  <text x="330" y="135">{copy.productMock.nodes[3]}</text>
+                </g>
+                <g>
+                  <circle cx="320" cy="235" r="30"></circle>
+                  <text x="320" y="240">{copy.productMock.nodes[4]}</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="product" class="section">
+        <div class="section-head center" data-reveal>
+          <p class="section-eyebrow">{copy.sections.product.eyebrow}</p>
+          <h2>{copy.sections.product.title}</h2>
+          <p>{copy.sections.product.body}</p>
+        </div>
+        <div class="feature-grid">
+          {copy.sections.product.features.map((feature, i) => (
+            <article class="feature-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={featureIcons[i]} />
+              </span>
+              <h3>{feature.title}</h3>
+              <p>{feature.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="workshops" class="band">
+        <div class="band-inner">
+          <div class="section-head" data-reveal>
+            <p class="section-eyebrow">{copy.sections.workshop.eyebrow}</p>
+            <h2>{copy.sections.workshop.title}</h2>
+            <p>{copy.sections.workshop.body}</p>
+          </div>
+          <ol class="step-list">
+            {copy.sections.workshop.steps.map((step, i) => (
+              <li data-reveal style={`--reveal-delay: ${i * 70}ms`}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section id="approach" class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.approach.eyebrow}</p>
+          <h2>{copy.sections.approach.title}</h2>
+          <p>{copy.sections.approach.body}</p>
+        </div>
+        <div class="principle-grid">
+          {copy.sections.approach.principles.map((principle, i) => (
+            <article class="principle-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <h3>{principle.title}</h3>
+              <p>{principle.body}</p>
+            </article>
+          ))}
+        </div>
+        <blockquote class="principle-quote" data-reveal>
+          {copy.sections.approach.quote}
+          <cite>{copy.sections.approach.quoteCite}</cite>
+        </blockquote>
+      </section>
+
+      <section id="privacy" class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.privacy.eyebrow}</p>
+          <h2>{copy.sections.privacy.title}</h2>
+          <p>{copy.sections.privacy.body}</p>
+        </div>
+        <div class="data-columns">
+          <article class="data-card keep" data-reveal>
+            <h3>{copy.sections.privacy.storesTitle}</h3>
+            <ul>
+              {copy.sections.privacy.stores.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+          <article class="data-card avoid" data-reveal style="--reveal-delay: 80ms">
+            <h3>{copy.sections.privacy.avoidsTitle}</h3>
+            <ul>
+              {copy.sections.privacy.avoids.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head" data-reveal>
+          <p class="section-eyebrow">{copy.sections.evidence.eyebrow}</p>
+          <h2>{copy.sections.evidence.title}</h2>
+          <p>{copy.sections.evidence.body}</p>
+        </div>
+        <div class="stats-grid">
+          {copy.sections.evidence.stats.map((stat, i) => (
+            <article class="stat-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </article>
+          ))}
+        </div>
+        <p class="evidence-note" data-reveal>{copy.sections.evidence.note}</p>
+      </section>
+
+      <section class="final-cta" data-reveal>
+        <div>
+          <h2>{copy.finalCta.title}</h2>
+          <p>{copy.finalCta.body}</p>
+        </div>
+        <div class="hero-actions">
+          <a class="button button-primary button-lg" href={appUrl}>{copy.finalCta.primaryCta}</a>
+          <a class="button button-secondary button-lg" href="#privacy">{copy.finalCta.secondaryCta}</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>{copy.footer.summary}</p>
+      <a href={appUrl}>{copy.footer.app} →</a>
+    </footer>
+  </div>
+</BaseLayout>

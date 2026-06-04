@@ -1,0 +1,8 @@
+---
+import LandingPage from "../../components/LandingPage.astro";
+import { landingContent } from "../../i18n/landing";
+
+const lang = "es";
+---
+
+<LandingPage lang={lang} copy={landingContent[lang]} />
