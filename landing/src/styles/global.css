@@ -1,34 +1,37 @@
 :root {
-  /* Warm paper neutrals with the app's teal brand on top. */
-  --background: oklch(0.987 0.009 83);
-  --foreground: oklch(0.205 0.012 67);
-  --card: oklch(0.998 0.004 83);
-  --muted: oklch(0.957 0.012 80);
-  --muted-foreground: oklch(0.51 0.02 72);
-  --border: oklch(0.9 0.013 78);
+  /* Clean, near-white neutrals (to sit well next to the white app screenshots).
+     Warmth comes only from the --warm accent used in the hero, glow, and quote. */
+  --background: oklch(0.994 0.002 240);
+  --foreground: oklch(0.205 0.006 240);
+  --card: oklch(1 0 0);
+  --muted: oklch(0.967 0.003 240);
+  --muted-foreground: oklch(0.505 0.014 240);
+  --border: oklch(0.915 0.004 240);
   --primary: oklch(0.511 0.096 186.391);
   --primary-foreground: oklch(0.985 0.014 180.72);
   --primary-soft: oklch(0.92 0.05 188);
   /* Warm accent used only for glow + small highlights. */
-  --warm: oklch(0.78 0.13 64);
-  --warm-strong: oklch(0.68 0.16 50);
+  --warm: oklch(0.79 0.13 64);
+  --warm-strong: oklch(0.65 0.17 48);
   --ring: oklch(0.6 0.07 188);
   --radius: 0.7rem;
   color-scheme: light;
 }
 
 .dark {
-  --background: oklch(0.175 0.012 64);
-  --foreground: oklch(0.96 0.008 82);
-  --card: oklch(0.215 0.013 64);
-  --muted: oklch(0.262 0.013 66);
-  --muted-foreground: oklch(0.74 0.016 78);
-  --border: oklch(1 0 0 / 11%);
-  --primary: oklch(0.64 0.1 187);
-  --primary-foreground: oklch(0.16 0.02 190);
+  /* Match the app's near-black dark theme; warmth comes only from the
+     accent used on the hero headline and the approach quote. */
+  --background: oklch(0.148 0.004 228.8);
+  --foreground: oklch(0.987 0.002 197.1);
+  --card: oklch(0.205 0.006 224);
+  --muted: oklch(0.262 0.008 222);
+  --muted-foreground: oklch(0.723 0.014 214.4);
+  --border: oklch(1 0 0 / 10%);
+  --primary: oklch(0.62 0.11 185);
+  --primary-foreground: oklch(0.14 0.02 200);
   --primary-soft: oklch(0.3 0.05 190);
   --warm: oklch(0.8 0.12 64);
-  --warm-strong: oklch(0.74 0.15 52);
+  --warm-strong: oklch(0.76 0.15 55);
   --ring: oklch(0.6 0.07 188);
   color-scheme: dark;
 }
@@ -510,138 +513,26 @@ p {
   text-align: center;
 }
 
-.window-body {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.window-side {
-  display: grid;
-  align-content: start;
-  gap: 0.85rem;
-}
-
-.readiness-panel,
-.next-action {
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.1);
+.window-shot {
+  display: block;
   background: var(--background);
-  padding: 1rem;
 }
 
-.readiness-panel {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.readiness-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.readiness-head p {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-size: 0.8rem;
-}
-
-.readiness-head strong {
-  display: block;
-  margin-top: 0.1rem;
-  font-family: "Noto Serif", Georgia, serif;
-  font-size: 1.5rem;
-}
-
-.readiness-head .pill {
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--primary) 14%, transparent);
-  color: var(--primary);
-  padding: 0.3rem 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.readiness-bar {
-  height: 0.5rem;
-  border-radius: 999px;
-  background: var(--muted);
-  overflow: hidden;
-}
-
-.readiness-bar span {
-  display: block;
-  width: 68%;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--warm-strong), var(--primary));
-}
-
-.next-action {
-  display: grid;
-  gap: 0.3rem;
-}
-
-.next-action span {
-  color: var(--muted-foreground);
-  font-size: 0.8rem;
-}
-
-.next-action strong {
-  font-size: 0.96rem;
-}
-
-.map-preview {
-  min-height: 300px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.1);
-  background:
-    radial-gradient(
-      120% 120% at 80% 0%,
-      color-mix(in oklab, var(--warm) 14%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px),
-    var(--muted);
-  background-size: cover, 30px 30px, 30px 30px, cover;
-}
-
-.map-preview svg {
+.window-shot img {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 300px;
+  height: auto;
 }
 
-.map-preview line {
-  stroke: color-mix(in oklab, var(--primary) 55%, var(--muted-foreground));
-  stroke-dasharray: 5 6;
-  stroke-linecap: round;
-  stroke-width: 2;
+/* Theme-aware screenshots: show the variant that matches the active theme.
+   Selectors are scoped under html[.dark] so they out-specify the
+   `.window-shot img` / `.phone-screen img` element rules. */
+html:not(.dark) .shot-dark {
+  display: none;
 }
 
-.map-preview circle {
-  fill: var(--card);
-  stroke: var(--primary);
-  stroke-width: 2;
-}
-
-.map-preview .node-warm circle {
-  stroke: var(--warm-strong);
-  fill: color-mix(in oklab, var(--warm) 16%, var(--card));
-}
-
-.map-preview text {
-  fill: var(--foreground);
-  font-family: "Geist", sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  text-anchor: middle;
+html.dark .shot-light {
+  display: none;
 }
 
 /* ---------- Sections ---------- */
@@ -679,53 +570,100 @@ p {
   font-size: 1.05rem;
 }
 
-.feature-grid {
+/* Feature showcase: alternating rows, each with a full app screenshot. */
+.feature-rows {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 2.5rem;
+  gap: clamp(3rem, 7vw, 5.5rem);
+  margin-top: clamp(3rem, 6vw, 4.5rem);
 }
 
-.feature-card {
+.feature-row {
   display: grid;
-  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+}
+
+.feature-row:nth-child(even) .feature-media {
+  order: 2;
+}
+
+.feature-media {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Phone-style frame holding the full, uncropped screenshot. */
+.device-frame {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5rem;
   border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.3);
+  border-radius: calc(var(--radius) * 3);
   background: var(--card);
-  padding: 1.3rem;
-  transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 30px 70px -34px color-mix(in oklab, var(--foreground) 55%, transparent);
 }
 
-.feature-card:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
-  box-shadow: 0 18px 40px -28px color-mix(in oklab, var(--foreground) 50%, transparent);
+.device-frame::before {
+  content: "";
+  position: absolute;
+  top: 0.95rem;
+  left: 50%;
+  width: 32%;
+  height: 0.32rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--foreground) 18%, transparent);
+  z-index: 2;
+}
+
+.device-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius) * 2.4);
+}
+
+.feature-info {
+  max-width: 30rem;
+}
+
+.feature-step {
+  display: block;
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in oklab, var(--primary) 28%, var(--border));
 }
 
 .feature-icon {
   display: inline-grid;
   place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin: 1.1rem 0 1rem;
   border-radius: calc(var(--radius) * 1.1);
   background: color-mix(in oklab, var(--primary) 12%, transparent);
   color: var(--primary);
 }
 
 .feature-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
-.feature-card h3 {
-  margin: 0;
-  font-size: 1.12rem;
+.feature-info h3 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-.feature-card p {
+.feature-info p {
   margin: 0;
   color: var(--muted-foreground);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 /* Workshop band */
@@ -749,41 +687,160 @@ p {
   padding: clamp(3.5rem, 8vw, 6rem) 0;
 }
 
-.step-list {
+.stepper {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-  margin: 2.5rem 0 0;
+  gap: 1.5rem 1rem;
+  margin: 2.75rem 0 0;
   padding: 0;
   list-style: none;
-  counter-reset: steps;
 }
 
-.step-list li {
-  counter-increment: steps;
-  min-height: 160px;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.3);
-  background: var(--card);
-  padding: 1.2rem;
+.step {
+  position: relative;
+}
+
+.step-num {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 1.1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--primary) 35%, var(--border));
+  background: color-mix(in oklab, var(--primary) 12%, var(--card));
+  color: var(--primary);
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* Dashed connector between consecutive step numbers (desktop row). */
+.step::after {
+  content: "";
+  position: absolute;
+  top: 1.25rem;
+  left: 3rem;
+  right: -1rem;
+  height: 2px;
+  transform: translateY(-1px);
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--primary) 45%, var(--border)) 0 6px,
+    transparent 6px 13px
+  );
+}
+
+.step:last-child::after {
+  display: none;
+}
+
+.step-text h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.step-text p {
+  margin: 0;
   color: var(--muted-foreground);
   font-size: 0.95rem;
   line-height: 1.5;
 }
 
-.step-list li::before {
-  content: counter(steps);
-  display: grid;
+/* ---------- Header icon links ---------- */
+.icon-link {
+  display: inline-grid;
   place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  margin-bottom: 1.1rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in oklab, var(--primary) 14%, transparent);
+  background: var(--card);
+  color: var(--muted-foreground);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.icon-link:hover {
+  color: var(--foreground);
+  border-color: color-mix(in oklab, var(--foreground) 30%, var(--border));
+}
+
+.icon-link svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.btn-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* ---------- Open source band ---------- */
+.open-source {
+  width: min(1080px, calc(100% - 2.5rem));
+  margin: clamp(2rem, 6vw, 4rem) auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.8);
+  background: var(--card);
+  padding: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.os-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  flex: none;
+  border-radius: calc(var(--radius) * 1.3);
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  color: var(--foreground);
+}
+
+.os-mark svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.os-text {
+  flex: 1 1 18rem;
+}
+
+.os-text h2 {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+}
+
+.os-text p {
+  margin: 0.5rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.98rem;
+}
+
+.os-cta {
+  flex: none;
+}
+
+/* ---------- Footer links ---------- */
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.footer-links a:hover {
   color: var(--primary);
-  font-family: "Noto Serif", serif;
-  font-size: 0.95rem;
-  font-weight: 700;
 }
 
 /* Approach / principles */
@@ -799,6 +856,22 @@ p {
   border-radius: calc(var(--radius) * 1.3);
   background: var(--card);
   padding: 1.3rem;
+}
+
+.principle-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-bottom: 1rem;
+  border-radius: calc(var(--radius) * 1.1);
+  background: color-mix(in oklab, var(--warm) 16%, transparent);
+  color: var(--warm-strong);
+}
+
+.principle-icon svg {
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .principle-card h3 {
@@ -896,7 +969,7 @@ p {
 /* Evidence */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 2.5rem;
 }
@@ -908,6 +981,22 @@ p {
   padding: 1.5rem;
 }
 
+.stat-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin-bottom: 1.1rem;
+  border-radius: calc(var(--radius) * 1.1);
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+.stat-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .stat-card strong {
   display: block;
   color: var(--primary);
@@ -916,7 +1005,7 @@ p {
   line-height: 1;
 }
 
-.stat-card span {
+.stat-label {
   display: block;
   margin-top: 0.8rem;
   color: var(--muted-foreground);
@@ -924,11 +1013,112 @@ p {
   line-height: 1.45;
 }
 
-.evidence-note {
-  max-width: 48rem;
-  margin: 1.5rem 0 0;
+/* ---------- SDG 4 emphasis ---------- */
+.sdg {
+  width: min(1080px, calc(100% - 2.5rem));
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.9);
+  background:
+    radial-gradient(
+      90% 140% at 0% 0%,
+      color-mix(in oklab, oklch(0.6 0.2 27) 10%, transparent),
+      transparent 60%
+    ),
+    var(--card);
+  padding: clamp(1.5rem, 4vw, 2.6rem);
+}
+
+.sdg-logo {
+  width: clamp(118px, 17vw, 158px);
+  height: auto;
+  flex: none;
+  border-radius: calc(var(--radius) * 0.7);
+}
+
+.sdg-text {
+  flex: 1 1 22rem;
+}
+
+.sdg-text h2 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+}
+
+.sdg-text p {
+  margin: 0.75rem 0 0;
   color: var(--muted-foreground);
+  font-size: 1.02rem;
+}
+
+/* ---------- Contact ---------- */
+.contact {
+  text-align: center;
+}
+
+.contact-head {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.contact-avatar {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0 auto 1.4rem;
+  display: block;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  box-shadow: 0 14px 34px -18px color-mix(in oklab, var(--foreground) 55%, transparent);
+}
+
+.contact-head h2 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.contact-head p {
+  margin: 1rem auto 0;
+  max-width: 38rem;
+  color: var(--muted-foreground);
+  font-size: 1.05rem;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 2.2rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 0.7rem 1.25rem;
+  color: var(--foreground);
+  font-weight: 600;
   font-size: 0.95rem;
+  transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+  color: var(--primary);
+}
+
+.social-link svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 /* Final CTA */
@@ -1007,16 +1197,67 @@ p {
     display: none;
   }
 
-  .window-body {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-grid,
   .principle-grid,
   .data-columns,
-  .stats-grid,
-  .step-list {
+  .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Feature rows stack: screenshot always on top. */
+  .feature-row {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .feature-row:nth-child(even) .feature-media {
+    order: 0;
+  }
+
+  .feature-icon {
+    margin-inline: auto;
+  }
+
+  /* Stepper becomes a vertical timeline. */
+  .stepper {
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 34rem;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    column-gap: 1rem;
+    padding-bottom: 1.6rem;
+  }
+
+  .step-num {
+    margin-bottom: 0;
+  }
+
+  .step-text {
+    padding-top: 0.35rem;
+  }
+
+  .step::after {
+    top: 2.5rem;
+    bottom: 0.4rem;
+    left: 1.25rem;
+    right: auto;
+    width: 2px;
+    height: auto;
+    transform: translateX(-1px);
+    background: repeating-linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--primary) 45%, var(--border)) 0 6px,
+      transparent 6px 13px
+    );
+  }
+
+  .step:last-child {
+    padding-bottom: 0;
   }
 }
 
@@ -1039,7 +1280,8 @@ p {
     gap: 0.35rem;
   }
 
-  .header-app-link {
+  .header-app-link,
+  .github-link {
     display: none;
   }
 
@@ -1067,17 +1309,13 @@ p {
     font-size: 1.02rem;
   }
 
-  .feature-grid,
   .principle-grid,
   .data-columns,
-  .stats-grid,
-  .step-list {
+  .stats-grid {
     grid-template-columns: 1fr;
   }
 
-  .step-list li,
-  .stat-card,
-  .feature-card {
+  .stat-card {
     min-height: auto;
   }
 
@@ -1089,7 +1327,37 @@ p {
     flex: 1;
   }
 
-  .product-frame {
+  /* Final CTA: stack the buttons so labels read cleanly. */
+  .final-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .final-cta .hero-actions {
+    flex-direction: column;
+  }
+
+  .final-cta .hero-actions .button {
+    width: 100%;
+  }
+
+  .open-source {
+    flex-direction: column;
+    align-items: flex-start;
+    width: calc(100% - 1.5rem);
+  }
+
+  .os-cta {
+    width: 100%;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-frame,
+  .open-source {
     width: calc(100% - 1.5rem);
   }
 

@@ -11,6 +11,10 @@ type Props = {
 
 const { lang, copy } = Astro.props;
 const appUrl = "https://beta.techmastery.dev/";
+const repoUrl = "https://github.com/Diego-TD/TechMastery";
+const igUrl = "https://www.instagram.com/diego.dtd/";
+const liUrl = "https://www.linkedin.com/in/diego-torres-durante/";
+const ghUserUrl = "https://github.com/Diego-TD";
 const langEntries = Object.entries(languages) as Array<[Lang, string]>;
 
 // Feature icons keyed by index (lucide outlines, inlined to avoid a dependency).
@@ -20,6 +24,30 @@ const featureIcons = [
   '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
   '<path d="M12 3a6 6 0 0 0-6 6c0 1 .2 2 .6 3l-1.6 4 4-1.5A6 6 0 1 0 12 3z"/><path d="M12 8v4l2 1"/>',
 ];
+
+const githubIcon =
+  '<path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>';
+
+// Stat icons, in the order of the evidence stats (phishing, exposure, password
+// manager, workshop). Lucide outlines.
+const statIcons = [
+  '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.5 12.5 7-7"/><path d="m13.5 5.5 2 2"/><path d="m17 3 3 3"/>',
+  '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+];
+
+// Approach principle icons (No shame, Calm over fear, People first).
+const principleIcons = [
+  '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>',
+  '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/>',
+  '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+];
+
+const instagramIcon =
+  '<rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>';
+const linkedinIcon =
+  '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>';
 ---
 
 <BaseLayout lang={lang} title={copy.meta.title} description={copy.meta.description}>
@@ -35,6 +63,7 @@ const featureIcons = [
         <a href="#workshops">{copy.nav.workshops}</a>
         <a href="#approach">{copy.nav.approach}</a>
         <a href="#privacy">{copy.nav.privacy}</a>
+        <a href="#contact">{copy.nav.contact}</a>
       </nav>
 
       <div class="header-actions">
@@ -65,6 +94,10 @@ const featureIcons = [
           </svg>
         </button>
 
+        <a class="icon-link github-link" href={repoUrl} target="_blank" rel="noopener" aria-label={copy.controls.github}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+        </a>
+
         <a class="button header-app-link" href={appUrl}>{copy.nav.app}</a>
       </div>
     </header>
@@ -86,62 +119,17 @@ const featureIcons = [
         </ul>
       </section>
 
-      {/* Product preview window. Swap the .window-body contents with a real
-          seeded screenshot when one is ready — the frame stays the same. */}
       <div class="product-frame" data-reveal style="--reveal-delay: 120ms">
-        <div class="product-window" aria-label={copy.productMock.title}>
+        <div class="product-window">
           <div class="window-bar">
             <div class="window-dots" aria-hidden="true">
               <span></span><span></span><span></span>
             </div>
             <div class="window-url">beta.techmastery.dev</div>
           </div>
-          <div class="window-body">
-            <div class="window-side">
-              <div class="readiness-panel">
-                <div class="readiness-head">
-                  <div>
-                    <p>{copy.productMock.title}</p>
-                    <strong>{copy.productMock.score}</strong>
-                  </div>
-                  <span class="pill">{copy.productMock.scoreLabel}</span>
-                </div>
-                <div class="readiness-bar"><span></span></div>
-              </div>
-              <div class="next-action">
-                <span>{copy.productMock.nextActionLabel}</span>
-                <strong>{copy.productMock.nextAction}</strong>
-              </div>
-            </div>
-            <div class="map-preview">
-              <svg viewBox="0 0 420 300" role="img" aria-label="Account dependency map preview">
-                <line x1="95" y1="140" x2="210" y2="80"></line>
-                <line x1="95" y1="140" x2="215" y2="210"></line>
-                <line x1="210" y1="80" x2="330" y2="130"></line>
-                <line x1="215" y1="210" x2="330" y2="130"></line>
-                <line x1="215" y1="210" x2="320" y2="235"></line>
-                <g class="node-warm">
-                  <circle cx="95" cy="140" r="36"></circle>
-                  <text x="95" y="145">{copy.productMock.nodes[0]}</text>
-                </g>
-                <g>
-                  <circle cx="210" cy="80" r="34"></circle>
-                  <text x="210" y="85">{copy.productMock.nodes[1]}</text>
-                </g>
-                <g>
-                  <circle cx="215" cy="210" r="38"></circle>
-                  <text x="215" y="215">{copy.productMock.nodes[2]}</text>
-                </g>
-                <g>
-                  <circle cx="330" cy="130" r="42"></circle>
-                  <text x="330" y="135">{copy.productMock.nodes[3]}</text>
-                </g>
-                <g>
-                  <circle cx="320" cy="235" r="30"></circle>
-                  <text x="320" y="240">{copy.productMock.nodes[4]}</text>
-                </g>
-              </svg>
-            </div>
+          <div class="window-shot">
+            <img class="shot-light" src="/shots/map-light.png" alt={copy.hero.shotAlt} width="1064" height="909" loading="eager" />
+            <img class="shot-dark" src="/shots/map-dark.png" alt={copy.hero.shotAlt} width="1064" height="909" loading="eager" />
           </div>
         </div>
       </div>
@@ -152,14 +140,23 @@ const featureIcons = [
           <h2>{copy.sections.product.title}</h2>
           <p>{copy.sections.product.body}</p>
         </div>
-        <div class="feature-grid">
+        <div class="feature-rows">
           {copy.sections.product.features.map((feature, i) => (
-            <article class="feature-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
-              <span class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={featureIcons[i]} />
-              </span>
-              <h3>{feature.title}</h3>
-              <p>{feature.body}</p>
+            <article class="feature-row" data-reveal>
+              <figure class="feature-media">
+                <div class="device-frame">
+                  <img class="shot-light" src={`/shots/${feature.shot}-light.png`} alt={feature.shotAlt} loading="lazy" />
+                  <img class="shot-dark" src={`/shots/${feature.shot}-dark.png`} alt={feature.shotAlt} loading="lazy" />
+                </div>
+              </figure>
+              <div class="feature-info">
+                <span class="feature-step">{String(i + 1).padStart(2, "0")}</span>
+                <span class="feature-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={featureIcons[i]} />
+                </span>
+                <h3>{feature.title}</h3>
+                <p>{feature.body}</p>
+              </div>
             </article>
           ))}
         </div>
@@ -172,9 +169,15 @@ const featureIcons = [
             <h2>{copy.sections.workshop.title}</h2>
             <p>{copy.sections.workshop.body}</p>
           </div>
-          <ol class="step-list">
+          <ol class="stepper">
             {copy.sections.workshop.steps.map((step, i) => (
-              <li data-reveal style={`--reveal-delay: ${i * 70}ms`}>{step}</li>
+              <li class="step" data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+                <span class="step-num">{i + 1}</span>
+                <div class="step-text">
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </li>
             ))}
           </ol>
         </div>
@@ -189,6 +192,9 @@ const featureIcons = [
         <div class="principle-grid">
           {copy.sections.approach.principles.map((principle, i) => (
             <article class="principle-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <span class="principle-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={principleIcons[i]} />
+              </span>
               <h3>{principle.title}</h3>
               <p>{principle.body}</p>
             </article>
@@ -231,12 +237,38 @@ const featureIcons = [
         <div class="stats-grid">
           {copy.sections.evidence.stats.map((stat, i) => (
             <article class="stat-card" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
+              <span class="stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={statIcons[i]} />
+              </span>
               <strong>{stat.value}</strong>
-              <span>{stat.label}</span>
+              <span class="stat-label">{stat.label}</span>
             </article>
           ))}
         </div>
-        <p class="evidence-note" data-reveal>{copy.sections.evidence.note}</p>
+      </section>
+
+      <section class="sdg" data-reveal>
+        <img class="sdg-logo" src="/04QualityEducation.svg" alt={copy.sdg.alt} width="405" height="405" loading="lazy" />
+        <div class="sdg-text">
+          <p class="section-eyebrow">{copy.sdg.eyebrow}</p>
+          <h2>{copy.sdg.title}</h2>
+          <p>{copy.sdg.body}</p>
+        </div>
+      </section>
+
+      <section class="open-source" data-reveal>
+        <span class="os-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor" set:html={githubIcon} />
+        </span>
+        <div class="os-text">
+          <p class="section-eyebrow">{copy.openSource.eyebrow}</p>
+          <h2>{copy.openSource.title}</h2>
+          <p>{copy.openSource.body}</p>
+        </div>
+        <a class="button button-secondary button-lg os-cta" href={repoUrl} target="_blank" rel="noopener">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+          {copy.openSource.cta}
+        </a>
       </section>
 
       <section class="final-cta" data-reveal>
@@ -249,11 +281,40 @@ const featureIcons = [
           <a class="button button-secondary button-lg" href="#privacy">{copy.finalCta.secondaryCta}</a>
         </div>
       </section>
+
+      <section id="contact" class="section contact" data-reveal>
+        <div class="contact-head">
+          <img class="contact-avatar" src="/me.jpeg" alt={copy.contact.name} width="96" height="96" loading="lazy" />
+          <p class="section-eyebrow">{copy.contact.eyebrow}</p>
+          <h2>{copy.contact.title}</h2>
+          <p>{copy.contact.body}</p>
+        </div>
+        <div class="contact-links">
+          <a class="social-link" href={igUrl} target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={instagramIcon} />
+            <span>Instagram</span>
+          </a>
+          <a class="social-link" href={liUrl} target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={linkedinIcon} />
+            <span>LinkedIn</span>
+          </a>
+          <a class="social-link" href={ghUserUrl} target="_blank" rel="noopener" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor" set:html={githubIcon} />
+            <span>GitHub</span>
+          </a>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
       <p>{copy.footer.summary}</p>
-      <a href={appUrl}>{copy.footer.app} →</a>
+      <div class="footer-links">
+        <a href={repoUrl} target="_blank" rel="noopener">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" set:html={githubIcon} />
+          {copy.footer.github}
+        </a>
+        <a href={appUrl}>{copy.footer.app} →</a>
+      </div>
     </footer>
   </div>
 </BaseLayout>
